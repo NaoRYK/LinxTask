@@ -1,5 +1,5 @@
 import FormProject from "../components/Project/FormProject"
-import { getAllProjects, getUserOwnProjectsWithTasks } from "../services/projectService"
+import { getAllProjects, getAllUserProjectsWithTasks, getUserOwnProjectsWithTasks } from "../services/projectService"
 import useAuthStore from "../stores/userStore"
 
 const Home = () => {
@@ -8,7 +8,7 @@ const Home = () => {
 
 
   const handleCheckProjects = () => {
-    getUserOwnProjectsWithTasks(user)
+    getAllUserProjectsWithTasks(user)
   }
   return (
     <div>
