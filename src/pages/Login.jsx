@@ -3,6 +3,7 @@ import { useNavigate } from "react-router";
 import { logInAccount } from "../services/authService";
 import AuthForm from "../components/Auth/AuthForm";
 import AuthInput from "../components/Auth/AuthInput";
+import ButtonGoogleRegister from "../components/ButtonGoogleRegister";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -43,6 +44,8 @@ const Login = () => {
 
         {error && <p>{error}</p>}
       </AuthForm>
+
+      <ButtonGoogleRegister/>
     </>
   );
 };

@@ -3,7 +3,7 @@ import Home from './pages/Home';
 
 import Login from './pages/Login';
 import Register from './pages/Register';
-import { ToastContainer } from 'react-toastify';
+import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Navbar from './components/Navbar';
 import useAuthStore from './stores/userStore';
@@ -16,7 +16,9 @@ function AppRoutes() {
 
   const {setUser,clearUser} = useAuthStore()
   useEffect(() => {
-    // Suscribirse a los cambios en el estado de autenticación
+  const toastId = toast.loading("Cargando...");
+
+    // Suscribe a los cambios en el estado de autenticación
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         setUser(user); // Actualiza el store con el usuario
@@ -24,9 +26,16 @@ function AppRoutes() {
         clearUser(); // Limpia el store si no hay usuario
       }
     });
-
+    toast.update(toastId, {
+      render: "Cargado",
+      type: "success",
+      isLoading: false,
+      autoClose: 1000, 
+    });
     // Limpiar la suscripción al desmontar el componente
-    return () => unsubscribe();
+    return () =>{unsubscribe();
+      toast.dismiss(toastId);
+    }
   }, [setUser, clearUser]);
 
   return (

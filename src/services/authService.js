@@ -102,55 +102,68 @@ export const createAccountWithGoogle = async (e) => {
   }
 }
 
-export const logInAccount = async (email,password) => {
-
+export const logInAccount = async (email, password) => {
   const toastId = toast.loading("Ingresando...");
 
   try {
+    console.log("Intentando iniciar sesión con:", email, password);
 
-
-    const userCredential =await signInWithEmailAndPassword(auth,email,password)
+    const userCredential = await signInWithEmailAndPassword(auth, email, password);
     const user = userCredential.user;
 
-    if(user.emailVerified){
-
+    if (user.emailVerified) {
       useAuthStore.getState().setUser(user); // Actualiza el store
 
       toast.update(toastId, {
-        render: "¡Sesion iniciada!",
+        render: "¡Sesión iniciada!",
         type: "success",
         isLoading: false,
         autoClose: 3000, 
       });
-    }
-    else{
-      auth.signOut()
+    } else {
+      // Aquí agregas un mensaje más específico para usuarios no verificados
+      await signOut(auth);
 
       toast.update(toastId, {
-        render: "¡Debe verificar el correo electronico!",
+        render: "¡Debe verificar el correo electrónico!",
         type: "warning",
         isLoading: false,
         autoClose: 5000, 
       });
 
-      throw new Error("Debe verificar el correo")
+      throw new Error("Debe verificar el correo electrónico");
     }
 
     console.log(user);
     
-
   } catch (error) {
+    let errorMessage = "Error en el inicio de sesión";
+
+    if (error.code === 'auth/invalid-email') {
+      errorMessage = "El correo electrónico proporcionado es inválido.";
+ 
+    } else if (error.code === 'auth/user-not-found') {
+      errorMessage = "El usuario no se encuentra registrado.";
+    }  else if (error.code === 'auth/too-many-requests') {
+      errorMessage = "Demasiados intentos fallidos. Inténtelo de nuevo más tarde.";
+    } else if (error.code === 'auth/invalid-credential') {
+      errorMessage = "Credenciales inválidas.";
+    } else if (error.message.includes("Debe verificar el correo electrónico")) {
+      errorMessage = "Debe verificar el correo electrónico.";
+    }
+
     toast.update(toastId, {
-      render: `Error: ${error.message}`,
+      render: `Error: ${errorMessage}`,
       type: "error",
       isLoading: false,
       autoClose: 3000,
     });
-    console.log(error);
+    console.error("Error en el inicio de sesión:", error);
     
-    throw new Error(error.message)
+    throw new Error(errorMessage);
   }
 }
+
 
 export const logout = async () => {
   try {

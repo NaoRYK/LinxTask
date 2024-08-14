@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { createAccount } from '../services/authService';
 import { useNavigate } from 'react-router';
+import ButtonGoogleRegister from '../components/ButtonGoogleRegister';
 
 const Register = () => {
   const [email, setEmail] = useState('');
@@ -26,7 +27,8 @@ const Register = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <>
+        <form onSubmit={handleSubmit}>
       <input
         type="text"
         value={name}
@@ -48,10 +50,15 @@ const Register = () => {
         placeholder="Contraseña"
         required
       />
-      <button type="submit">Register</button>
+      <button  >Register</button>
       {error && <p>{error}</p>}
       {success && <p>{success}</p>}
     </form>
+    <ButtonGoogleRegister/>
+    </>
+
+
+    
   );
 };
 
