@@ -1,9 +1,9 @@
-import { createUserWithEmailAndPassword, getAuth, sendEmailVerification, signInWithEmailAndPassword, signInWithPopup, signOut, updateProfile } from 'firebase/auth';
+import { createUserWithEmailAndPassword, getAuth, sendEmailVerification, signInWithEmailAndPassword, signInWithPopup, signOut, updateProfile,GoogleAuthProvider } from 'firebase/auth';
 import { doc, getFirestore, setDoc } from 'firebase/firestore';
 import app from '../config/firebaseConfig';
 import { toast } from 'react-toastify';
 import defaultProfilePicture from '../assets/defaultProfilePicturepng.png'
-import { GoogleAuthProvider } from 'firebase/auth/web-extension';
+import useAuthStore from '../stores/userStore';
 
 const auth = getAuth(app);
 const db = getFirestore(app);
@@ -61,29 +61,8 @@ export const createAccount = async (email, password, name) => {
   }
 };
 
-export const createAccountWithGooglee = async (e) => {
-  const provider = new GoogleAuthProvider();
 
-  signInWithPopup(auth, provider)
-  .then((result) => {
-    // This gives you a Google Access Token. You can use it to access the Google API.
-    const credential = GoogleAuthProvider.credentialFromResult(result);
-    const token = credential.accessToken;
-    // The signed-in user info.
-    const user = result.user;
-    // IdP data available using getAdditionalUserInfo(result)
-    // ...
-  }).catch((error) => {
-    // Handle Errors here.
-    const errorCode = error.code;
-    const errorMessage = error.message;
-    // The email of the user's account used.
-    const email = error.customData.email;
-    // The AuthCredential type that was used.
-    const credential = GoogleAuthProvider.credentialFromError(error);
-    // ...
-  });
-}
+
 export const createAccountWithGoogle = async (e) => {
 
   e.preventDefault();
@@ -104,6 +83,10 @@ export const createAccountWithGoogle = async (e) => {
       isLoading: false,
       autoClose: 3000,
     });
+
+    console.log(user);
+    useAuthStore.getState().setUser(user); // Actualiza el store
+
     return user;
 
   } catch (error) {
@@ -130,6 +113,9 @@ export const logInAccount = async (email,password) => {
     const user = userCredential.user;
 
     if(user.emailVerified){
+
+      useAuthStore.getState().setUser(user); // Actualiza el store
+
       toast.update(toastId, {
         render: "¡Sesion iniciada!",
         type: "success",
@@ -169,6 +155,8 @@ export const logInAccount = async (email,password) => {
 export const logout = async () => {
   try {
     await signOut(auth);
+    useAuthStore.getState().clearUser(); // Limpia el store
+
     toast.success("¡Has cerrado sesión con éxito!");
   } catch (error) {
     console.error("Error code:", error.code);

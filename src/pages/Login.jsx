@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
-import { createAccountWithGoogle, createAccountWithGooglee, logInAccount } from "../services/authService";
+import { logInAccount } from "../services/authService";
+import AuthForm from "../components/Auth/AuthForm";
+import AuthInput from "../components/Auth/AuthInput";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -22,26 +24,25 @@ const Login = () => {
 
   return (
     <>
-      <form onSubmit={handleSubmit}>
-        <input
+      <AuthForm handleSubmit={handleSubmit}>
+        <AuthInput
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="Correo electronico"
-          required
+          name="emailInput"
         />
-        <input
+        <AuthInput
           type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           placeholder="Contraseña"
-          required
+          name="passwordInput"
         />
         <button type="submit">Iniciar Sesión</button>
 
         {error && <p>{error}</p>}
-      </form>
-      <button onClick={createAccountWithGooglee} >Iniciar Sesión Con google</button>
+      </AuthForm>
     </>
   );
 };
