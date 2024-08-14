@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { createAccount } from '../services/authService';
+import { useNavigate } from 'react-router';
 
 const Register = () => {
   const [email, setEmail] = useState('');
@@ -7,7 +8,7 @@ const Register = () => {
   const [name, setName] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
-
+  const navigate = useNavigate()
   const handleSubmit = async (event) => {
     event.preventDefault();
     
@@ -17,6 +18,8 @@ const Register = () => {
       setEmail('');
       setPassword('');
       setName('');
+      navigate('/login')
+
     } catch (error) {
       setError(error.message);
     }
