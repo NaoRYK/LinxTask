@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import { useState, useEffect } from 'react';
 import { getUsers } from '../../services/userService';
 import { addCollaboratorsToProject, getProjectCollaborators } from '../../services/projectService';
@@ -72,6 +73,11 @@ const AddCollaboratorsModal = ({ projectId, onClose }) => {
             </form>
         </div>
     );
+};
+
+AddCollaboratorsModal.propTypes = {
+    projectId: PropTypes.string.isRequired,
+    onClose: PropTypes.func.isRequired,
 };
 
 export default AddCollaboratorsModal;

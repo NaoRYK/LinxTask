@@ -22,7 +22,7 @@ export const getUserDisplayNames = async (userIds) => {
         const userDoc = await getDoc(userDocRef);
         if (userDoc.exists()) {
           const userData = userDoc.data();
-          displayNames.push({ id: userId, displayName: userData.displayName });
+          displayNames.push({ id: userId, name: userData.name });
         }
       }
       return displayNames;

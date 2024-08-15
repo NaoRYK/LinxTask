@@ -1,6 +1,5 @@
-import { addDoc, collection, doc, getDoc, getDocs, getFirestore, query, setDoc, updateDoc, where } from "firebase/firestore";
+import { addDoc, collection, doc, getDoc, getDocs, getFirestore, query,  updateDoc, where } from "firebase/firestore";
 import app from "../config/firebaseConfig";
-import useAuthStore from "../stores/userStore";
 
 const db = getFirestore(app);
 
@@ -83,23 +82,21 @@ const getProjectTasks = async (projectId) => {
         throw new Error("No hay usuario logueado");
       }
   
-      // referencia a colección projects
+      // Referencia a la colección projects
       const projectsCollectionRef = collection(db, 'projects');
   
-      // consulta para filtrar los proyectos por creatorId
+      // Consulta para filtrar los proyectos por creatorId
       const q = query(projectsCollectionRef, where("creatorId", "==", user.uid));
   
-     
       const querySnapshot = await getDocs(q);
   
       const projectsWithTasks = [];
   
-      // itero sobre los documentos de proyectos
+      // Itera sobre los documentos de proyectos
       for (const doc of querySnapshot.docs) {
-     
-          const tasks = await getProjectTasks(project.id);
-          projectsWithTasks.push({ ...project, tasks });
-        
+        const project = { id: doc.id, ...doc.data() };
+        const tasks = await getProjectTasks(project.id);
+        projectsWithTasks.push({ ...project, tasks });
       }
   
       console.log("Proyectos del usuario con tareas:", projectsWithTasks);
@@ -108,7 +105,6 @@ const getProjectTasks = async (projectId) => {
       console.error("Error al obtener los proyectos del usuario:", error);
     }
   };
-
   const getUserCollaboratedProjects = async (user) => {
     try {
       if (!user) {

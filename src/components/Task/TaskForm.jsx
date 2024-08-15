@@ -4,17 +4,21 @@ import useAuthStore from '../../stores/userStore';
 import { getProjectCollaborators } from '../../services/projectService';
 import { useParams } from 'react-router-dom';
 import { getUserDisplayNames } from '../../services/userService';
+import TaskInput from './TaskInput';
 
 const TaskForm = () => {
     const [taskText, setTaskText] = useState('');
     const [taskDesc, setTaskDesc] = useState('');
     const [taskDate, setTaskDate] = useState('');
-    const [taskColor, setTaskColor] = useState('');
+    const [taskColor, setTaskColor] = useState('#ffffff');
     const [taskPriority, setTaskPriority] = useState(false);
     const [collaborators, setCollaborators] = useState([]);
     const [selectedCollaborators, setSelectedCollaborators] = useState([]);
+    const [error, setError] = useState('');
     const { user } = useAuthStore();
     const { projectId } = useParams();
+
+    const today = new Date().toISOString().split('T')[0];
 
     useEffect(() => {
         const fetchCollaborators = async () => {
@@ -28,17 +32,27 @@ const TaskForm = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
+
+        if (!taskText || !taskDesc || !taskDate) {
+            setError('Por favor, complete todos los campos obligatorios.');
+            return;
+        }
+
+        setError('');
+
         const taskData = {
             creatorId: user.uid,
             creatorName: user.displayName,
             projectId: projectId,
-            text: taskText,
+            name: taskText,
             description: taskDesc,
             dueDate: taskDate,
             status: 'pending',
             priority: taskPriority,
             collaborators: selectedCollaborators, 
+            taskColor: taskColor
         };
+
         createTask(projectId, taskData);
         setTaskText('');
         setTaskDesc('');
@@ -53,58 +67,55 @@ const TaskForm = () => {
     };
 
     return (
-        <form onSubmit={handleSubmit}>
-            <label>
-                Nombre de la tarea
-                <input
-                    value={taskText}
-                    onChange={(e) => setTaskText(e.target.value)}
-                    type="text"
-                    placeholder='Nombre de la tarea'
-                />
-            </label>
-            <label>
-                Descripción de la tarea
-                <textarea
-                    value={taskDesc}
-                    onChange={(e) => setTaskDesc(e.target.value)}
-                    placeholder='Descripción de la tarea'
-                />
-            </label>
-            <label>
-                Fecha de entrega
-                <input
-                    value={taskDate}
-                    onChange={(e) => setTaskDate(e.target.value)}
-                    type="date"
-                />
-            </label>
-            <label>
-                Colaboradores
-                <select multiple value={selectedCollaborators} onChange={handleCollaboratorChange}>
-                    {collaborators.map((collaborator) => (
-                        <option key={collaborator.id} value={collaborator.id}>
-                            {collaborator.displayName}
-                        </option>
-                    ))}
-                </select>
-            </label>
-            <label>
-                Prioritaria
-                <input
-                    type="checkbox"
-                    checked={taskPriority}
-                    onChange={(e) => setTaskPriority(e.target.checked)}
-                />
-            </label>
-            <label>
-                Color de la tarea
-                <input
-                    type="color"
-                    checked={taskColor}
-                    onChange={(e) => setTaskColor(e.target.value)}
-                />
-            </label>
+        <form onSubmit={handleSubmit} className='flex flex-col bg-blue-700/40'>
+            {error && <p className="text-red-500">{error}</p>}
+            <TaskInput
+                label='Nombre de la tarea'
+                type='text'
+                value={taskText}
+                onChange={(e) => setTaskText(e.target.value)}
+                placeholder='Nombre de la tarea'
+                required
+            />
+            <TaskInput
+                label='Descripción de la tarea'
+                type='textarea'
+                value={taskDesc}
+                onChange={(e) => setTaskDesc(e.target.value)}
+                placeholder='Descripción de la tarea'
+                required
+            />
+            <TaskInput
+                label='Fecha de entrega'
+                type='date'
+                value={taskDate}
+                onChange={(e) => setTaskDate(e.target.value)}
+                required
+                min={today}
+            />
+            <TaskInput
+                label='Colaboradores'
+                type='select'
+                value={selectedCollaborators}
+                onChange={handleCollaboratorChange}
+                options={collaborators.map(collaborator => ({
+                    value: collaborator.id,
+                    label: collaborator.name
+                }))}
+            />
+            <TaskInput
+                label='Prioritaria'
+                type='checkbox'
+                checked={taskPriority}
+                onChange={(e) => setTaskPriority(e.target.checked)}
+            />
+            <TaskInput
+                label='Color de la tarea'
+                type='color'
+                value={taskColor}
+                onChange={(e) => setTaskColor(e.target.value)}
+                required
+            />
             <button type="submit">Enviar</button>
         </form>
     );

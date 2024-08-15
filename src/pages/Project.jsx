@@ -43,6 +43,8 @@ const Project = () => {
       try {
         const fetchedProject = await getProjectByIdWithTasks(projectId);
         setProject(fetchedProject);
+        console.log("proyecto",project);
+        
       } catch (error) {
         console.error("Error fetching project:", error);
       }
