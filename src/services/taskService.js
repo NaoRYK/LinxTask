@@ -1,16 +1,15 @@
 import { addDoc, collection, doc } from "firebase/firestore";
 import { db } from "../config/firebaseConfig";
 
-// Función para agregar una tarea a un proyecto específico
 export const createTask = async (projectId, taskData) => {
   try {
-    // Referencia a la subcolección 'tasks' del proyecto específico
+    // Referencia a la subcolección 'tasks' del proyecto 
     const tasksCollectionRef = collection(doc(db, 'projects', projectId), 'tasks');
 
-    // Agregar la nueva tarea a la subcolección
+    // Agregar la tarea a la subcolección
     await addDoc(tasksCollectionRef, {
       ...taskData,
-      createdAt: new Date(), // Fecha de creación de la tarea
+      createdAt: new Date(), 
     });
 
     console.log("Tarea agregada exitosamente");

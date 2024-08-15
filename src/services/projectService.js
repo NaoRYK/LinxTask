@@ -1,4 +1,4 @@
-import { addDoc, collection, doc, getDocs, getFirestore, query, setDoc, where } from "firebase/firestore";
+import { addDoc, collection, doc, getDoc, getDocs, getFirestore, query, setDoc, where } from "firebase/firestore";
 import app from "../config/firebaseConfig";
 import useAuthStore from "../stores/userStore";
 
@@ -27,8 +27,14 @@ export const createProject = async (user, projectName, collaborators = null) => 
         createdAt: new Date(),
         createdBy: user.displayName,
       };
-  
+      
+      const initialStatus = {
+        pending:'pending',
+        completed:'completed',
+        delayed:'delayed'
+      }
       await addDoc(collection(db, 'projects', projectRef.id, 'tasks'), initialTask);
+      await addDoc(collection(db, 'projects', projectRef.id, 'status'), initialStatus);
 
       
   } catch (error) {
@@ -55,10 +61,10 @@ const getProjectTasks = async (projectId) => {
 
   export const getAllProjects = async () => {
     try {
-      // Accede a la colección 'projects'
+      // accedo a la colección de proyectos
       const querySnapshot = await getDocs(collection(db, 'projects'));
       console.log(querySnapshot, 'query');
-      // Itera sobre los documentos y muestra sus datos
+      // itera sobre los documentos y muestra sus datos
       const projects = [];
       querySnapshot.forEach((doc) => {
         projects.push({ id: doc.id, ...doc.data() });
@@ -77,19 +83,18 @@ const getProjectTasks = async (projectId) => {
         throw new Error("No hay usuario logueado");
       }
   
-      // Referencia a la colección 'projects'
+      // referencia a colección projects
       const projectsCollectionRef = collection(db, 'projects');
   
-      // Crear una consulta para filtrar los proyectos por 'creatorId'
+      // consulta para filtrar los proyectos por creatorId
       const q = query(projectsCollectionRef, where("creatorId", "==", user.uid));
   
-      // Ejecutar la consulta
+     
       const querySnapshot = await getDocs(q);
   
-      // Crear un array para almacenar proyectos con tareas
       const projectsWithTasks = [];
   
-      // Iterar sobre los documentos de proyectos
+      // itero sobre los documentos de proyectos
       for (const doc of querySnapshot.docs) {
      
           const tasks = await getProjectTasks(project.id);
@@ -100,7 +105,7 @@ const getProjectTasks = async (projectId) => {
       console.log("Proyectos del usuario con tareas:", projectsWithTasks);
       return projectsWithTasks;
     } catch (error) {
-      console.error("Error al obtener los proyectos del usuario con tareas:", error);
+      console.error("Error al obtener los proyectos del usuario:", error);
     }
   };
 
@@ -110,16 +115,14 @@ const getProjectTasks = async (projectId) => {
         throw new Error("No hay usuario logueado");
       }
   
-      // Referencia a la colección 'projects'
+      // referencia a la colección projects
       const projectsCollectionRef = collection(db, 'projects');
   
-      // Crear una consulta para filtrar proyectos por 'collaborators'
+      // consulta para filtrar proyectos por collaborators
       const q = query(projectsCollectionRef, where("collaborators", "array-contains", user.uid));
   
-      // Ejecutar la consulta
       const querySnapshot = await getDocs(q);
   
-      // Crear un array para almacenar los proyectos en los que el usuario es colaborador
       const collaboratedProjects = [];
       querySnapshot.forEach((doc) => {
         collaboratedProjects.push({ id: doc.id, ...doc.data() });
@@ -131,14 +134,14 @@ const getProjectTasks = async (projectId) => {
     }
   };
   
-  // Función para obtener todos los proyectos del usuario (creador o colaborador)
+  //obtener todos los proyectos del usuario (creador o colaborador)
   export const getAllUserProjectsWithTasks = async (user) => {
     try {
       if (!user) {
         throw new Error("No hay usuario logueado");
       }
   
-      // Obtener proyectos creados por el usuario
+      // obtengo proyectos creados por el usuario
       const createdProjectsQuery = query(collection(db, 'projects'), where("creatorId", "==", user.uid));
       const createdProjectsSnapshot = await getDocs(createdProjectsQuery);
   
@@ -147,16 +150,15 @@ const getProjectTasks = async (projectId) => {
         createdProjects.push({ id: doc.id, ...doc.data() });
       });
   
-      // Obtener proyectos en los que el usuario es colaborador
+      // obtengo proyectos en los que el usuario es colaborador
       const collaboratedProjects = await getUserCollaboratedProjects(user);
   
-      // Combinar proyectos creados y colaborados
+ 
       const allProjects = [...createdProjects, ...collaboratedProjects];
   
-      // Crear un array para almacenar proyectos con tareas
       const projectsWithTasks = [];
   
-      // Iterar sobre todos los proyectos (creados y colaborados)
+      // itero sobre todos los proyectos (creados y colaborados)
       for (const project of allProjects) {
         const tasks = await getProjectTasks(project.id);
         projectsWithTasks.push({ ...project, tasks });
@@ -166,5 +168,33 @@ const getProjectTasks = async (projectId) => {
       return projectsWithTasks;
     } catch (error) {
       console.error("Error al obtener todos los proyectos del usuario con tareas:", error);
+    }
+  };
+
+  export const getProjectByIdWithTasks = async (projectId) => {
+    try {
+      if (typeof projectId !== 'string' || !projectId) {
+        throw new Error("ID de proyecto inválido.");
+      }
+  
+      const projectRef = doc(db, 'projects', projectId);
+      const projectSnapshot = await getDoc(projectRef);
+  
+      if (!projectSnapshot.exists()) {
+        throw new Error("Proyecto no encontrado");
+      }
+  
+      const projectData = { id: projectSnapshot.id, ...projectSnapshot.data() };
+  
+      const tasksCollectionRef = collection(db, `projects/${projectId}/tasks`);
+      const tasksSnapshot = await getDocs(tasksCollectionRef);
+      const tasks = [];
+      tasksSnapshot.forEach((taskDoc) => {
+        tasks.push({ id: taskDoc.id, ...taskDoc.data() });
+      });
+  
+      return { ...projectData, tasks };
+    } catch (error) {
+      console.error("Error al obtener el proyecto y sus tareas:", error);
     }
   };

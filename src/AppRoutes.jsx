@@ -12,6 +12,7 @@ import { auth } from './config/firebaseConfig';
 import { useEffect } from 'react';
 import ProtectedRoute from './routes/ProtectedRoute';
 import PublicRoute from './routes/PublicRoute';
+import Projects from './pages/Project';
 function AppRoutes() {
 
   const {setUser,clearUser} = useAuthStore()
@@ -46,6 +47,7 @@ function AppRoutes() {
         <Route path="/" element={<ProtectedRoute component={Home} />} />
         <Route path="/login" element={<PublicRoute component={Login} />} />
         <Route path="/register" element={<PublicRoute component={Register}/>} />
+        <Route path="/projects/:projectId" element={<ProtectedRoute component={Projects}/>} />
         {/* <Route path="*" element={<NotFound />} /> */}
       </Routes>
       <ToastContainer
