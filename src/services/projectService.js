@@ -1,4 +1,4 @@
-import { addDoc, collection, doc, getDoc, getDocs, getFirestore, query, setDoc, where } from "firebase/firestore";
+import { addDoc, collection, doc, getDoc, getDocs, getFirestore, query, setDoc, updateDoc, where } from "firebase/firestore";
 import app from "../config/firebaseConfig";
 import useAuthStore from "../stores/userStore";
 
@@ -198,3 +198,59 @@ const getProjectTasks = async (projectId) => {
       console.error("Error al obtener el proyecto y sus tareas:", error);
     }
   };
+
+  
+export const getProjectCollaborators = async (projectId) => {
+  try {
+      // Referencia al documento del proyecto
+      const projectDocRef = doc(db, 'projects', projectId);
+      
+      // Obtener el documento del proyecto
+      const projectDoc = await getDoc(projectDocRef);
+      
+      if (projectDoc.exists()) {
+          const projectData = projectDoc.data();
+          
+          // Obtener la lista de colaboradores
+          const collaborators = projectData.collaborators || [];
+          
+          console.log("Colaboradores:", collaborators);
+          
+          return collaborators;
+      } else {
+          console.log("El proyecto no existe");
+          return [];
+      }
+  } catch (error) {
+      console.error("Error al obtener los colaboradores del proyecto:", error);
+      return [];
+  }
+};
+
+
+export const addCollaboratorsToProject = async (projectId, newCollaborators) => {
+  try {
+    const projectDocRef = doc(db, 'projects', projectId);
+
+    const projectDoc = await getDoc(projectDocRef);
+
+    if (projectDoc.exists()) {
+      const projectData = projectDoc.data();
+
+      const existingCollaborators = projectData.collaborators || [];
+
+      // Combinar la lista de colaboradores existentes con los nuevos colaboradores
+      const updatedCollaborators = [...new Set([...existingCollaborators, ...newCollaborators])];
+
+      await updateDoc(projectDocRef, {
+        collaborators: updatedCollaborators,
+      });
+
+      console.log("Colaboradores añadidos exitosamente");
+    } else {
+      console.log("El proyecto no existe");
+    }
+  } catch (error) {
+    console.error("Error al añadir colaboradores:", error);
+  }
+};
