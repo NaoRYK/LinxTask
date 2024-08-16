@@ -21,7 +21,7 @@ const Home = () => {
 
 
   const handleOpenProjectModal = () => {
-    setOpenCreateModal(!openCreateModal)
+    setOpenCreateModal(true)
   }
   useEffect(() => {
     if (user) {

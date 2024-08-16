@@ -2,7 +2,6 @@
 
 import { Link } from "react-router-dom";
 import useAuthStore from "../stores/userStore";
-import { logout } from "../services/authService";
 import appLogo from "../assets/icons/app-icon.png";
 import LogoutModal from "./LogoutModal/LogoutModal";
 import { useState } from "react";
@@ -11,7 +10,7 @@ const Navbar = () => {
   const { user } = useAuthStore();
   const [openLogout, setOpenLogout] = useState(false)
   return (
-    <nav className="  w-full h-[80px] border-b-[2px] fixed z-10 bg-mainGreen border-outlineGrey/50 shadow-md drop-shadow-lg px-[30px] top-0 left-0 w-full ">
+    <nav className=" h-[80px] border-b-[2px] fixed z-10 bg-mainGreen border-outlineGrey/50 shadow-md drop-shadow-lg px-[30px] top-0 left-0 w-full ">
       <ul className="flex items-center h-full gap-2 justify-between ">
         <li>
           <Link to="/">

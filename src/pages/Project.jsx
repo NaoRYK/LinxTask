@@ -4,6 +4,8 @@ import { getProjectByIdWithTasks } from '../services/projectService';
 import TaskModal from '../components/Task/TaskModal';
 import { getTaskStatuses } from '../services/statusService';
 import AddCollaboratorsModal from '../components/Project/AddCollaboratorsModal';
+import ProjectContainer from '../components/ProjectPage/ProjectContainer/ProjectContainer';
+import TaskCard from '../components/Tasks/TaskCard';
 
 const Project = () => {
   const { projectId } = useParams(); // Obtén projectId de la URL
@@ -15,8 +17,27 @@ const Project = () => {
     setOpenCreateModal(true)
   }
   const handleAddCollaboratorsButton = () => {
-    setOpenCollaboratorsModal(true);
+    setOpenCollaboratorsModal(!openCollaboratorsModal);
 };
+const onCreateTask = (newTask) => {
+  setProject((prevProject) => ({
+    ...prevProject,
+    tasks: [...prevProject.tasks, newTask],
+  }));
+};
+
+const refetchProject = async () => {
+  try {
+    const fetchedProject = await getProjectByIdWithTasks(projectId);
+    setProject(fetchedProject);
+  } catch (error) {
+    console.error("Error al refetch el proyecto:", error);
+  }
+};
+
+useEffect(() => {
+  refetchProject();
+}, [projectId]);
   useEffect(() => {
     const fetchStatuses = async () => {
         try {
@@ -58,16 +79,23 @@ const Project = () => {
   if (!project) return <p>Loading...</p>;
 
   return (
-    <div className='mt-[80px]'>
-      {openCreateModal && <TaskModal statuses={statuses}></TaskModal>}
-      <h1>{project.name}</h1>
-      <ul>
-        {project.tasks.map((task) => (
-          <li className='text-red-400' key={task.id}>{task.name}</li>
-        ))}
-      </ul>
+    <div className='mt-[80px] p-4 flex items-center justify-center flex-col'>
+      {openCreateModal && <TaskModal statuses={statuses}         refetchProject={refetchProject} // Pasa la función refetchProject como prop
+ onCreateTask={onCreateTask}></TaskModal>}
 
-      <button onClick={handleCreateTaskButton}>Create task</button>
+    <ProjectContainer handleAddCollaboratorsButton={handleAddCollaboratorsButton} project={project} createTask={handleCreateTaskButton}>
+      <div className='p-8 flex flex-wrap gap-4 justify-center overflow-y-auto'>
+      {project.tasks && project.tasks.length > 0 && project.tasks.map((task) => {
+  if (task) {
+    return <TaskCard statuses={statuses} task={task} key={task.id} />;
+  } else {
+    return null;
+  }
+})}
+      </div>
+
+    </ProjectContainer>
+
       
       {openCollaboratorsModal && (
                 <AddCollaboratorsModal
@@ -75,7 +103,6 @@ const Project = () => {
                     onClose={() => setOpenCollaboratorsModal(false)}
                 />
             )}
-                        <button onClick={handleAddCollaboratorsButton}>Añadir Colaboradores</button>
 
     </div>
   );

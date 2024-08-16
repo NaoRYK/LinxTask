@@ -8,6 +8,7 @@ import AuthForm from "../components/Auth/AuthForm";
 import AuthInput from "../components/Auth/AuthInput";
 import AccedButton from "../components/Login/Buttons/AccedButton";
 import appLogo from '../assets/icons/app-icon.png'
+import RedirectUser from "../components/Login/Buttons/RedirectUser";
 
 const Register = () => {
   const [email, setEmail] = useState("");
@@ -72,6 +73,8 @@ const Register = () => {
               <img src={appLogo} alt="app-icon" />
             </div>
           </LoginContainer>
+    <RedirectUser isRegister={false}></RedirectUser>
+
         </div>
         <div className="text-[48px] font-semibold p-10 ml-14">
           <h2>

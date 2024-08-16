@@ -6,11 +6,11 @@ import { useParams } from 'react-router-dom';
 import { getUserDisplayNames } from '../../services/userService';
 import TaskInput from './TaskInput';
 
-const TaskForm = () => {
+const TaskForm = ({ onCreateTask,refetchProject }) => {
     const [taskText, setTaskText] = useState('');
     const [taskDesc, setTaskDesc] = useState('');
     const [taskDate, setTaskDate] = useState('');
-    const [taskColor, setTaskColor] = useState('#ffffff');
+    const [taskColor, setTaskColor] = useState('#ffffff'); // Valor inicial del color
     const [taskPriority, setTaskPriority] = useState(false);
     const [collaborators, setCollaborators] = useState([]);
     const [selectedCollaborators, setSelectedCollaborators] = useState([]);
@@ -47,18 +47,28 @@ const TaskForm = () => {
             name: taskText,
             description: taskDesc,
             dueDate: taskDate,
-            status: 'pending',
+            status: ['pendiente'],
             priority: taskPriority,
-            collaborators: selectedCollaborators, 
-            taskColor: taskColor
+            collaborators: selectedCollaborators,
+            taskColor: taskColor // Asegúrate de que el color se incluya aquí
         };
 
-        createTask(projectId, taskData);
-        setTaskText('');
-        setTaskDesc('');
-        setTaskDate('');
-        setTaskPriority(false);
-        setSelectedCollaborators([]);
+        createTask(projectId, taskData)
+            .then((newTask) => {
+                onCreateTask(newTask);
+                refetchProject();
+
+                setTaskText('');
+                setTaskDesc('');
+                setTaskDate('');
+                setTaskPriority(false);
+                setSelectedCollaborators([]);
+                setTaskColor('#FFED88'); 
+            })
+            .catch(error => {
+                console.error("Error al crear la tarea:", error);
+                setError('Hubo un error al crear la tarea.');
+            });
     };
 
     const handleCollaboratorChange = (e) => {

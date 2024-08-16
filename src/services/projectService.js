@@ -25,7 +25,7 @@ export const createProject = async (user, projectName, collaborators = null, col
       description: "Esto es una tarea de ejemplo",
       assignedTo: [user.uid],
       dueDate: new Date(),
-      status: "pending",
+      status: ["pendiente"],
       prioritary: true,
       createdAt: new Date(),
       createdBy: user.displayName,
@@ -34,9 +34,9 @@ export const createProject = async (user, projectName, collaborators = null, col
 
     // Crear los estados iniciales
     const initialStatuses = [
-      { name: 'pending', color: '#808080' }, // Gris
-      { name: 'completed', color: '#008000' }, // Verde
-      { name: 'delayed', color: '#FF0000' },  // Rojo
+      { name: 'pendiente', color: '#808080' }, // Gris
+      { name: 'completada', color: '#008000' }, // Verde
+      { name: 'atrasada', color: '#FF0000' },  // Rojo
     ];
 
     for (const status of initialStatuses) {
