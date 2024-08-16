@@ -24,7 +24,7 @@ const Login = () => {
   };
 
   return (
-    <>
+    <div className="mt-[80px]">
       <AuthForm handleSubmit={handleSubmit}>
         <AuthInput
           type="email"
@@ -46,7 +46,7 @@ const Login = () => {
       </AuthForm>
 
       <ButtonGoogleRegister/>
-    </>
+    </div>
   );
 };
 

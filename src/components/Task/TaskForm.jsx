@@ -67,7 +67,7 @@ const TaskForm = () => {
     };
 
     return (
-        <form onSubmit={handleSubmit} className='flex flex-col bg-blue-700/40'>
+        <form onSubmit={handleSubmit} autoComplete='off' className='flex flex-col bg-blue-700/40'>
             {error && <p className="text-red-500">{error}</p>}
             <TaskInput
                 label='Nombre de la tarea'

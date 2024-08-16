@@ -1,4 +1,4 @@
-import { addDoc, collection, doc, getDoc, getDocs, getFirestore, query,  updateDoc, where } from "firebase/firestore";
+import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, getFirestore, query,  updateDoc, where } from "firebase/firestore";
 import app from "../config/firebaseConfig";
 import useProjectStore from "../stores/projectStore";
 
@@ -61,6 +61,14 @@ export const createProject = async (user, projectName, collaborators = null, col
   }
 };
 
+export const deleteProject = async (projectId) => {
+  try {
+    await deleteDoc(doc(db, 'projects', projectId));
+    console.log('proyecto borrado correctamente');
+  } catch (error) {
+    console.error('error al borrar el proyecto:', error);
+  }
+};
 const getProjectTasks = async (projectId) => {
   try {
     const tasksCollectionRef = collection(db, `projects/${projectId}/tasks`);

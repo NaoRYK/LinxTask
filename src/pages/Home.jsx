@@ -6,7 +6,7 @@ import useProjectStore from "../stores/projectStore";
 import ProjectCard from "../components/ProjectCard/ProjectCard";
 import Skeleton from "../components/Skeleton/Skeleton";
 import createProjectIcon from '../assets/icons/create-project.png';
-import { createProject, getAllUserProjectsWithTasks } from "../services/projectService";
+import { createProject, getAllUserProjectsWithTasks, deleteProject } from "../services/projectService";
 
 const Home = () => {
   const { user } = useAuthStore();
@@ -46,15 +46,35 @@ const Home = () => {
     }
   };
 
+  const handleDeleteProject = async (projectId) => {
+    try {
+      console.log("ID del proyecto para borrar:", projectId, "Tipo:", typeof projectId);
+      await deleteProject(projectId);
+      
+      // Actualiza los proyectos en el estado
+      setProjects(storeProjects.filter(project => project.id !== projectId));
+      
+      // Actualiza los proyectos fijados
+      const updatedPinnedProjects = pinnedProjects.filter(p => p.id !== projectId);
+      setPinnedProjects(updatedPinnedProjects);
+      
+      // Guarda los proyectos fijados en el local storage
+      localStorage.setItem('pinnedProjects', JSON.stringify(updatedPinnedProjects));
+    } catch (error) {
+      console.error("Error deleting project:", error);
+    }
+  };
+
   const togglePinProject = (project) => {
     const isPinned = pinnedProjects.some(p => p.id === project.id);
     let updatedPinnedProjects;
 
     if (isPinned) {
-      return; // No hacer nada si el proyecto ya está fijado
+      updatedPinnedProjects = pinnedProjects.filter(p => p.id !== project.id);
+    } else {
+      updatedPinnedProjects = [...pinnedProjects, project];
     }
 
-    updatedPinnedProjects = [...pinnedProjects, project];
     setPinnedProjects(updatedPinnedProjects);
     localStorage.setItem('pinnedProjects', JSON.stringify(updatedPinnedProjects));
   };
@@ -66,7 +86,7 @@ const Home = () => {
   };
 
   return (
-    <div className="p-[75px] relative min-h-screen">
+    <div className="p-[75px] relative min-h-screen top-[80px]">
       {/* Pinned Projects Section */}
       <section className="border-b-2 border-outlineGrey/20">
         <div className="mb-[22px]">
@@ -84,6 +104,7 @@ const Home = () => {
                     key={project.id} 
                     project={project} 
                     onUnpinProject={handleUnpinProject} 
+                    onDelete={handleDeleteProject}
                   />
                 ))
               : <p className="text-gray-500">Todavía no hay proyectos fijados.</p>
@@ -106,6 +127,7 @@ const Home = () => {
                     project={project} 
                     onTogglePin={togglePinProject}
                     isPinned={pinnedProjects.some(p => p.id === project.id)} // Pasar el estado de fijado
+                    onDelete={handleDeleteProject} // Añadir la función para eliminar el proyecto
                   />
                 ))
               : <p className="text-gray-500">Todavía no hay proyectos creados.</p>

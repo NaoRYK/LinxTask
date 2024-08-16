@@ -47,7 +47,9 @@ const FormProject = ({ onCreateProject }) => {
     };
 
     return (
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} className='bg-red-400 text-white'
+        
+        autoComplete="off">
             {error && <p className="text-red-500">{error}</p>}
             <div>
                 <label htmlFor="projectName">Nombre del proyecto:</label>

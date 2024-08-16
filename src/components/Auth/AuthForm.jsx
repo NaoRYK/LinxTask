@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 
 const AuthForm = ({ handleSubmit, children }) => {
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} autoComplete='off'>
       {children}
     </form>
   );

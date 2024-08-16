@@ -4,11 +4,19 @@ import { Link } from "react-router-dom";
 import trashCan from '../../assets/icons/delete.png';
 import keep from '../../assets/icons/keep.png';
 
-const ProjectCard = ({ project, onTogglePin, isPinned }) => {
+const ProjectCard = ({ project, onTogglePin, isPinned, onDelete }) => {
   const handlePinClick = (e) => {
-    e.preventDefault()
-    e.stopPropagation()
+    e.preventDefault();
+    e.stopPropagation();
     onTogglePin(project);
+  };
+
+  const handleDeleteClick = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (window.confirm("¿Estás seguro de que deseas eliminar este proyecto?")) {
+      onDelete(project?.id);
+    }
   };
 
   return (
@@ -19,19 +27,19 @@ const ProjectCard = ({ project, onTogglePin, isPinned }) => {
       >
         <div className="flex justify-between items-center">
           <p className="font-semibold">{project?.name}</p>
-          {!isPinned && <button onClick={handlePinClick} >
-        <FontAwesomeIcon icon={faStar} className="hover:text-yellow-500"></FontAwesomeIcon>
-        </button>}
+          {!isPinned && <button onClick={handlePinClick}>
+            <FontAwesomeIcon icon={faStar} className="hover:text-yellow-500"></FontAwesomeIcon>
+          </button>}
         </div>
 
         <div className="flex w-full justify-between">
           <div className="flex gap-2 text-tertiaryDark">
-            <button onClick={handlePinClick} className="hover:bg-outlineGrey p-1 rounded-lg transition-all">
+            <button onClick={handleDeleteClick} className="hover:bg-outlineGrey p-1 rounded-lg transition-all">
               <img src={trashCan} className="w-[19.8px] h-[20.2px]" alt="trash-icon" />
             </button>
-             { !isPinned && <button onClick={handlePinClick} className="hover:bg-outlineGrey p-1 rounded-lg transition-all" >
+            {!isPinned && <button onClick={handlePinClick} className="hover:bg-outlineGrey p-1 rounded-lg transition-all">
               <img src={keep} className="w-[19.8px] h-[20.2px] cursor-pointer" alt="keep-icon" />
-            </button> }
+            </button>}
           </div>
 
           <div className="flex">
