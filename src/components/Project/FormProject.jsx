@@ -51,13 +51,13 @@ const FormProject = ({ onCreateProject, onClose }) => {
     };
 
     return (
-        <form onSubmit={handleSubmit} className='bg-red-400 text-white' autoComplete="off">
+        <form onSubmit={handleSubmit} className='bg-red-400 text-white h-[90%]' autoComplete="off">
             {error && <p className="text-red-500">{error}</p>}
             <div className='flex items-center justify-around'>
-                <div className='bg-[#71E4B9] w-[600px] h-[65px] rounded-[20px] flex items-center justify-center gap-2'>
+                <div className='bg-[#71E4B9] w-[600px] h-[65px] rounded-[20px] flex shadow-md items-center justify-center gap-2'>
                     <label className='text-[20px] font-bold text-[#09926C]' htmlFor="projectName">Nombre del proyecto</label>
                     <input 
-                        className='bg-[#A9F1D2] w-[355px] h-[45px] rounded-[15px]'
+                        className='bg-[#A9F1D2] w-[355px] h-[45px] rounded-[15px] p-2 text-tertiaryGreen focus:outline-textGreen '
                         id="projectName"
                         value={projectText} 
                         onChange={(e) => setProjectText(e.target.value)} 
@@ -66,7 +66,7 @@ const FormProject = ({ onCreateProject, onClose }) => {
                     />
                 </div>
                 <div className="flex items-center gap-2 ">
-                    <div className="relative flex items-center justify-center w-[60px] h-[60px] rounded-full bg-[#71E4B9]">
+                    <div className="relative flex items-center justify-center w-[60px] h-[60px] rounded-full bg-[#71E4B9] shadow-md">
                         <input 
                             id="projectColor"
                             value={projectColor} 
@@ -77,11 +77,11 @@ const FormProject = ({ onCreateProject, onClose }) => {
                         <img 
                             src={colorSelectorIcon} 
                             alt="Selector de color" 
-                            className="w-8 h-8 cursor-pointer"
+                            className="w-8 h-8 cursor-pointer "
                         />
                     </div>
                     <label htmlFor="projectColor" className=" text-[#09926C] text-[12px] font-bold w-[129px]">
-                        <FontAwesomeIcon icon={faArrowLeft} /> Escoge el color de la tarea pulsando aquí
+                        <FontAwesomeIcon icon={faArrowLeft} /> Escoge el color del proyecto pulsando aquí
                     </label>
                 </div>
             </div>
@@ -100,7 +100,7 @@ const FormProject = ({ onCreateProject, onClose }) => {
                     ))}
                 </select>
             </div>
-            <button type="submit">Enviar</button>
+            <button className='bg-[#17CF97] w-[140px] h-[60px] rounded-[100px] shadow-md text-[#077559] font-semibold' type="submit">Crear proyecto</button>
         </form>
     );
 }
