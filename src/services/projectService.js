@@ -1,43 +1,63 @@
 import { addDoc, collection, doc, getDoc, getDocs, getFirestore, query,  updateDoc, where } from "firebase/firestore";
 import app from "../config/firebaseConfig";
+import useProjectStore from "../stores/projectStore";
 
 const db = getFirestore(app);
 
 
 
-export const createProject = async (user, projectName, collaborators = null) => {
+export const createProject = async (user, projectName, collaborators = null, color = '#FFD1D1') => {
   try {
-      const projectRef = await addDoc(collection(db, 'projects'), {
-          name: projectName,
-          creator: user.displayName,
-          creatorId: user.uid,
-          collaborators: collaborators,
-          createdAt: new Date(),
-      });
-      console.log("Proyecto agregado");
+    // Crear el proyecto
+    const projectRef = await addDoc(collection(db, 'projects'), {
+      name: projectName,
+      creator: user.displayName,
+      creatorId: user.uid,
+      collaborators: collaborators || [],
+      color: color || '#bd5555', // Valor predeterminado
+      createdAt: new Date(),
+    });
+    console.log("Proyecto agregado");
 
-      const initialTask = {
-        name: "Bienvenido",
-        description: "Esto es una tarea de ejemplo",
-        assignedTo: [ user.uid],
-        dueDate: new Date(),
-        status: "pending",
-        prioritary: true,
-        createdAt: new Date(),
-        createdBy: user.displayName,
-      };
-      
-      const initialStatus = {
-        pending:'pending',
-        completed:'completed',
-        delayed:'delayed'
-      }
-      await addDoc(collection(db, 'projects', projectRef.id, 'tasks'), initialTask);
-      await addDoc(collection(db, 'projects', projectRef.id, 'status'), initialStatus);
+    // Crear la tarea inicial
+    const initialTask = {
+      name: "Bienvenido",
+      description: "Esto es una tarea de ejemplo",
+      assignedTo: [user.uid],
+      dueDate: new Date(),
+      status: "pending",
+      prioritary: true,
+      createdAt: new Date(),
+      createdBy: user.displayName,
+    };
+    await addDoc(collection(db, 'projects', projectRef.id, 'tasks'), initialTask);
 
-      
+    // Crear los estados iniciales
+    const initialStatuses = [
+      { name: 'pending', color: '#808080' }, // Gris
+      { name: 'completed', color: '#008000' }, // Verde
+      { name: 'delayed', color: '#FF0000' },  // Rojo
+    ];
+
+    for (const status of initialStatuses) {
+      await addDoc(collection(db, 'projects', projectRef.id, 'status'), status);
+    }
+
+    console.log("Estados predeterminados agregados");
+
+    // Devuelve el ID del proyecto o el nuevo proyecto
+    return {
+      id: projectRef.id,
+      name: projectName,
+      color,
+      creator: user.displayName,
+      creatorId: user.uid,
+      collaborators,
+      createdAt: new Date(),
+    };
   } catch (error) {
-      console.error("Error al agregar el documento:", error);
+    console.error("Error al agregar el proyecto:", error);
+    throw error; // Lanza el error para que el componente que llama pueda manejarlo
   }
 };
 
@@ -70,6 +90,8 @@ const getProjectTasks = async (projectId) => {
       });
   
       console.log("Proyectos:", projects);
+      useProjectStore.getState().setProjects(projects);
+
       return projects; 
     } catch (error) {
       console.error("Error al obtener los proyectos:", error);
@@ -161,6 +183,8 @@ const getProjectTasks = async (projectId) => {
       }
   
       console.log("Proyectos del usuario con tareas:", projectsWithTasks);
+      useProjectStore.getState().setProjects(projectsWithTasks);
+
       return projectsWithTasks;
     } catch (error) {
       console.error("Error al obtener todos los proyectos del usuario con tareas:", error);
@@ -189,6 +213,8 @@ const getProjectTasks = async (projectId) => {
         tasks.push({ id: taskDoc.id, ...taskDoc.data() });
       });
   
+      useProjectStore.getState().setProjects([{ ...projectData, tasks }]);
+
       return { ...projectData, tasks };
     } catch (error) {
       console.error("Error al obtener el proyecto y sus tareas:", error);
