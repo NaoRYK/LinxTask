@@ -4,11 +4,26 @@ import app from '../config/firebaseConfig';
 import { toast } from 'react-toastify';
 import defaultProfilePicture from '../assets/defaultProfilePicturepng.png'
 import useAuthStore from '../stores/userStore';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { storage } from '../config/firebaseConfig'; // Asegúrate de importar el objeto de Storage
 
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-export const createAccount = async (email, password, name) => {
+export const uploadProfilePicture = async (file, userId) => {
+  if (!file) return null;
+
+  const storageRef = ref(storage, `profilePictures/${userId}/${file.name}`);
+  try {
+    await uploadBytes(storageRef, file);
+    const photoURL = await getDownloadURL(storageRef);
+    return photoURL;
+  } catch (error) {
+    console.error("Error al subir la foto de perfil:", error);
+    return null;
+  }
+};
+export const createAccount = async (email, password, name, file) => {
   if (name) {
     const toastId = toast.loading("Procesando...");
     try {
@@ -16,35 +31,35 @@ export const createAccount = async (email, password, name) => {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
 
-      // Actualiza el perfil del usuario con el nombre de usuario
-      await updateProfile(user, { displayName: name,photoURL:defaultProfilePicture });
+      // Subir la foto de perfil si existe
+      const photoURL = file ? await uploadProfilePicture(file, user.uid) : defaultProfilePicture;
 
-      // Guarda el nombre de usuario y otros datos en Firestore
+      // Actualiza el perfil del usuario con el nombre de usuario y foto de perfil
+      await updateProfile(user, { displayName: name, photoURL });
+
+      // Guarda el nombre de usuario, correo electrónico y foto de perfil en Firestore
       await setDoc(doc(db, 'users', user.uid), {
         name,
-        email
+        email,
+        photoURL
       });
 
-
       const continueUrl = {
-        url:  window.location.origin + '/login', 
-      }
+        url: window.location.origin + '/login',
+      };
       // Envia verificación de correo electrónico
-      await sendEmailVerification(user,continueUrl);
+      await sendEmailVerification(user, continueUrl);
 
-      auth.signOut()
-
-      
+      auth.signOut();
 
       toast.update(toastId, {
         render: "¡Registro exitoso! Por favor, verifica tu correo electrónico.",
         type: "success",
         isLoading: false,
-        autoClose: 3000, 
+        autoClose: 3000,
       });
-      
-      return user;
 
+      return user;
     } catch (error) {
       console.error("Error code:", error.code);
       console.error("Error message:", error.message);
@@ -63,18 +78,21 @@ export const createAccount = async (email, password, name) => {
 
 
 
-export const createAccountWithGoogle = async (e) => {
 
+export const createAccountWithGoogle = async (e) => {
   e.preventDefault();
   const provider = new GoogleAuthProvider();
   const toastId = toast.loading("Procesando...");
+
   try {
-    const result = await signInWithPopup(auth,provider)
+    const result = await signInWithPopup(auth, provider);
     const user = result.user;
 
+    // Guarda la información del usuario en Firestore
     await setDoc(doc(db, 'users', user.uid), {
       name: user.displayName,
-      email: user.email
+      email: user.email,
+      photoURL: user.photoURL // Guarda la URL de la foto de perfil
     });
 
     toast.update(toastId, {
@@ -84,11 +102,9 @@ export const createAccountWithGoogle = async (e) => {
       autoClose: 3000,
     });
 
-    console.log(user);
     useAuthStore.getState().setUser(user); // Actualiza el store
 
     return user;
-
   } catch (error) {
     console.error("Error code:", error.code);
     console.error("Error message:", error.message);
@@ -100,7 +116,8 @@ export const createAccountWithGoogle = async (e) => {
     });
     throw new Error(error.message);
   }
-}
+};
+
 
 export const logInAccount = async (email, password) => {
   const toastId = toast.loading("Ingresando...");

@@ -3,6 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link } from "react-router-dom";
 import trashCan from '../../assets/icons/delete.png';
 import keep from '../../assets/icons/keep.png';
+import useAuthStore from "../../stores/userStore";
 
 const ProjectCard = ({ project, onTogglePin, isPinned, onDelete }) => {
   const handlePinClick = (e) => {
@@ -19,6 +20,8 @@ const ProjectCard = ({ project, onTogglePin, isPinned, onDelete }) => {
     }
   };
 
+  const {user} = useAuthStore()
+
   return (
     <Link className="relative" to={`projects/${project?.id}`}>
       <div
@@ -34,9 +37,9 @@ const ProjectCard = ({ project, onTogglePin, isPinned, onDelete }) => {
 
         <div className="flex w-full justify-between">
           <div className="flex gap-2 text-tertiaryDark">
-            <button onClick={handleDeleteClick} className="hover:bg-outlineGrey p-1 rounded-lg transition-all">
+            {project.creatorId === user.uid &&             <button onClick={handleDeleteClick} className="hover:bg-outlineGrey p-1 rounded-lg transition-all">
               <img src={trashCan} className="w-[19.8px] h-[20.2px]" alt="trash-icon" />
-            </button>
+            </button>}
             {!isPinned && <button onClick={handlePinClick} className="hover:bg-outlineGrey p-1 rounded-lg transition-all">
               <img src={keep} className="w-[19.8px] h-[20.2px] cursor-pointer" alt="keep-icon" />
             </button>}

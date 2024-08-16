@@ -48,6 +48,21 @@ const TaskInput = ({ label, type = 'text', value = '', onChange, placeholder = '
         );
     }
 
+    if (type === 'datetime-local') {
+        return (
+            <label>
+                {label}
+                <input
+                    type="datetime-local"
+                    value={value}
+                    onChange={onChange}
+                    required={required}
+                    min={min} // Para el caso de datetime-local, puede ser útil
+                />
+            </label>
+        );
+    }
+
     return (
         <label>
             {label}
@@ -65,7 +80,7 @@ const TaskInput = ({ label, type = 'text', value = '', onChange, placeholder = '
 
 TaskInput.propTypes = {
     label: PropTypes.string.isRequired,
-    type: PropTypes.oneOf(['text', 'textarea', 'date', 'checkbox', 'color', 'select']),
+    type: PropTypes.oneOf(['text', 'textarea', 'date', 'checkbox', 'color', 'select', 'datetime-local']), // Añadido datetime-local
     value: PropTypes.oneOfType([
         PropTypes.string,
         PropTypes.bool,
@@ -81,7 +96,7 @@ TaskInput.propTypes = {
             label: PropTypes.string.isRequired
         })
     ),
-    min: PropTypes.string // Añadido para el caso del input de fecha
+    min: PropTypes.string // Añadido para el caso del input de fecha y datetime-local
 };
 
 export default TaskInput;

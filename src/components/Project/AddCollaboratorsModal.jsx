@@ -69,41 +69,43 @@ const AddCollaboratorsModal = ({ projectId, onClose }) => {
     >
       {showModal && (
         <div className={`bg-white rounded shadow-md p-4 w-1/2`}>
-          <h2 className={`text-lg font-bold mb-4`}>Añadir Colaboradores</h2>
-          <form className={`flex flex-wrap justify-center`}>
-            {filteredUsers.map((user) => (
-              <div key={user.id} className={`flex items-center mr-4`}>
-                <label>
-                  <input
-                    type="checkbox"
-                    value={user.id}
-                    onChange={handleUserChange}
-                    className={`mr-2`}
-                  />
-                  {user.name}
-                </label>
-              </div>
-            ))}
-            <button
-              type="button"
-              onClick={handleSubmit}
-              className={`bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded`}
-            >
-              Añadir
-            </button>
-            <button
-              type="button"
-              onClick={(e) => {
-                if (e.target === e.currentTarget) {
-                  setShowModal(false);
-                }
-              }}
-              className={`bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded`}
-            >
-              Cerrar
-            </button>
-          </form>
+  <h2 className={`text-lg font-bold mb-4`}>Añadir Colaboradores</h2>
+  <form className={`flex flex-wrap justify-center flex-col`}>
+    <div className={`overflow-y-auto h-64 flex flex-col`}>
+      {filteredUsers.map((user) => (
+        <div key={user.id} className={`flex items-center mb-2`}>
+          <label className={`flex items-center`}>
+            <input
+              type="checkbox"
+              value={user.id}
+              onChange={handleUserChange}
+              className={`w-4 h-4 mr-2 text-textGreen rounded border-gray-300 focus:ring-textGreen`}
+            />
+            <span className={`text-gray-700`}>{user.name}</span>
+          </label>
         </div>
+      ))}
+    </div>
+    <button
+      type="button"
+      onClick={handleSubmit}
+      className={`bg-loginGreen mb-2 hover:bg-textGreen text-white font-bold py-2 px-4 rounded`}
+    >
+      Añadir
+    </button>
+    <button
+      type="button"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) {
+          setShowModal(false);
+        }
+      }}
+      className={`bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded`}
+    >
+      Cerrar
+    </button>
+  </form>
+</div>
       )}
     </div>)
   );

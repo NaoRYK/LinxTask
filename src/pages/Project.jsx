@@ -6,6 +6,7 @@ import { getTaskStatuses } from '../services/statusService';
 import AddCollaboratorsModal from '../components/Project/AddCollaboratorsModal';
 import ProjectContainer from '../components/ProjectPage/ProjectContainer/ProjectContainer';
 import TaskCard from '../components/Tasks/TaskCard';
+import useAuthStore from '../stores/userStore';
 
 const Project = () => {
   const { projectId } = useParams(); // Obtén projectId de la URL
@@ -13,11 +14,21 @@ const Project = () => {
   const [statuses, setStatuses] = useState([])
   const [openCreateModal, setOpenCreateModal] = useState(false)
   const [openCollaboratorsModal, setOpenCollaboratorsModal] = useState(false);
+  const {user} = useAuthStore();
+  console.log(user);
+  
   const handleCreateTaskButton = () => {
     setOpenCreateModal(true)
   }
   const handleAddCollaboratorsButton = () => {
-    setOpenCollaboratorsModal(!openCollaboratorsModal);
+
+    if(project.creatorId === user.uid){
+      
+      setOpenCollaboratorsModal(!openCollaboratorsModal);
+    }
+    else{
+      alert("Debe ser administrador o creador del proyecto para añadir participantes")
+    }
 };
 const onCreateTask = (newTask) => {
   setProject((prevProject) => ({
@@ -26,6 +37,12 @@ const onCreateTask = (newTask) => {
   }));
 };
 
+const onDeleteTask = (taskId) => {
+  setProject((prevProject) => ({
+    ...prevProject,
+    tasks: prevProject.tasks.filter((task) => task.id !== taskId),
+  }));
+};
 const refetchProject = async () => {
   try {
     const fetchedProject = await getProjectByIdWithTasks(projectId);
@@ -85,13 +102,18 @@ useEffect(() => {
 
     <ProjectContainer handleAddCollaboratorsButton={handleAddCollaboratorsButton} project={project} createTask={handleCreateTaskButton}>
       <div className='p-8 flex flex-wrap gap-4 justify-center overflow-y-auto'>
-      {project.tasks && project.tasks.length > 0 && project.tasks.map((task) => {
+      {project.tasks && project.tasks.length > 0 ? project.tasks.filter((task) => {
+  if (task && task.assignedTo && task.creatorId) {
+    return task.assignedTo.includes(user.uid) || task.creatorId === user.uid;
+  }
+  return false;
+}).map((task) => {
   if (task) {
-    return <TaskCard statuses={statuses} task={task} key={task.id} />;
+    return <TaskCard onDeleteTask={onDeleteTask} statuses={statuses} task={task} key={task.id} />;
   } else {
     return null;
   }
-})}
+}):  <h2>Todavia no hay ninguna task creada...</h2>}
       </div>
 
     </ProjectContainer>

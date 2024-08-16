@@ -28,7 +28,8 @@ export const createProject = async (user, projectName, collaborators = null, col
       status: ["pendiente"],
       prioritary: true,
       createdAt: new Date(),
-      createdBy: user.displayName,
+      creatorName: user.displayName,
+      taskColor:'#FFED88'
     };
     await addDoc(collection(db, 'projects', projectRef.id, 'tasks'), initialTask);
 

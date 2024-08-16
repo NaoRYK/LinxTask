@@ -1,21 +1,37 @@
 import { faClock } from '@fortawesome/free-regular-svg-icons';
-import { faCaretRight, faEllipsisV } from '@fortawesome/free-solid-svg-icons';
+import { faCaretRight, faEllipsisV, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import React from 'react';
+import React, { useState } from 'react';
+import { deleteTask } from '../../services/taskService';
+import useAuthStore from '../../stores/userStore';
+import TaskInfoModal from '../Task/TaskInfoModal';
 
-const TaskCard = ({ task, statuses }) => {
+const TaskCard = ({ task, statuses, onDeleteTask }) => {
     const backgroundColor = task.taskColor || '#FFED88';
-    const darkerColor = darkenColor(backgroundColor, 0.2); // Ajusta el porcentaje para oscurecer más o menos
+    const darkerColor = darkenColor(backgroundColor, 0.2);
+    const darkestColor = darkenColor(backgroundColor, 0.4);
+    const [openCardModal, setOpenCardModal] = useState(false);
+    const { user } = useAuthStore();
+
+    const handleOpenCardModal = () => {
+        setOpenCardModal(true);
+    };
+
+    const handleCloseCardModal = () => {
+        setOpenCardModal(false);
+    };
+
+    const handleDeleteCard = () => {
+        deleteTask(task.projectId, task.id);
+        onDeleteTask(task.id);
+    };
 
     const parseDueDate = (dueDate) => {
         if (dueDate && dueDate.seconds) {
-            // Es un timestamp
-            return new Date(dueDate.seconds * 1000); // Convertir segundos a milisegundos
+            return new Date(dueDate.seconds * 1000);
         } else if (dueDate && !isNaN(Date.parse(dueDate))) {
-            // Es una cadena de fecha
             return new Date(dueDate);
         } else {
-            // Fecha inválida
             return new Date();
         }
     };
@@ -27,20 +43,28 @@ const TaskCard = ({ task, statuses }) => {
         day: '2-digit'
     });
 
-    // Obtener el color de fondo para el estado
     const getStatusColor = (status) => {
         const statusObj = statuses.find(s => s.name === status);
-        return statusObj ? statusObj.color : '#6d6262'; // Color predeterminado si no se encuentra el estado
+        return statusObj ? statusObj.color : '#6d6262';
     };
 
     return (
-        <div className='w-[400px] h-[250px] rounded-[10px] shadow-lg p-6 grid grid-rows-[25px,142px,35px]' style={{ backgroundColor: backgroundColor }}>
+        <div className='w-[410px] h-[250px] rounded-[10px] shadow-lg p-6 grid grid-rows-[25px,142px,35px] relative  cursor-pointer' style={{ backgroundColor: backgroundColor }}
+            onClick={handleOpenCardModal}
+        >
+            {task.creatorId === user.uid && <button
+                onClick={handleDeleteCard}
+                className='w-[30px] rounded-full h-[30px] text-[18px] bg-[#BC1919] text-[#761c1c] flex items-center justify-center absolute top-[-.5rem] right-[-.5rem]'
+            >
+                <FontAwesomeIcon icon={faTrash} />
+            </button>}
             <div className='flex items-center gap-3'>
-                <FontAwesomeIcon icon={faCaretRight} />
-                <h3 className='text-[24px] font-semibold'>{task.name}</h3>
+                <FontAwesomeIcon  style={{color:darkestColor}} icon={faCaretRight} />
+                <h3 className='text-[24px] font-semibold' style={{color:darkestColor}}>{task.name}</h3>
             </div>
             <div className=''>
-            <p className='text-primaryDark/70 max-w-[336px] max-h-[142px] overflow-hidden text-ellipsis break-words '>{task.description}</p>            </div>
+                <p className='text-primaryDark/70 max-w-[336px] max-h-[142px] overflow-hidden text-ellipsis break-words'>{task.description}</p>
+            </div>
             <div className='grid items-center grid-cols-[40px,90px,1fr] gap-3'>
                 <div className='w-[30px] h-[30px] rounded-full flex items-center justify-center' style={{ backgroundColor: darkerColor }}>
                     <FontAwesomeIcon className='' icon={faEllipsisV} />
@@ -49,7 +73,14 @@ const TaskCard = ({ task, statuses }) => {
                     <FontAwesomeIcon icon={faClock} />
                     <p className='font-semibold text-[10px]'>{formattedDueDate}</p>
                 </div>
-                <div className='flex justify-end'>
+                <div className='flex justify-end gap-[0.2rem]'>
+                {task.priority &&                         <p
+                           
+                           className='p-1 rounded-[10px] w-[110px] text-center h-[30px] text-[15px] font-semibold text-white overflow-hidden text-ellipsis'
+                           style={{ backgroundColor: darkerColor }}
+                       >
+                           Prioritaria
+                       </p>}
                     {task.status.map((status, index) => (
                         <p
                             key={index}
@@ -59,8 +90,11 @@ const TaskCard = ({ task, statuses }) => {
                             {status.charAt(0).toUpperCase() + status.slice(1)}
                         </p>
                     ))}
+
+
                 </div>
             </div>
+            {openCardModal && <TaskInfoModal task={task} onClose={handleCloseCardModal} />}
         </div>
     );
 };

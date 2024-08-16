@@ -7,7 +7,10 @@ const LogoutModal = ({ user }) => {
       <img className='rounded-full w-[65px] h-[65px]' src={user.photoURL} alt={user.displayName} />
       <h3 className='font-semibold text-[20px]'>{user.displayName}</h3>
       <p className='text-[10px]'>{user.email}</p>
-      <button className='w-[90px] h-[25px] bg-buttonGreen rounded-[10px]' onClick={logout}><p className='text-textGreen text-[10px]'>Cerrar sesión</p> </button>
+      <button className='w-[90px] h-[25px] bg-buttonGreen rounded-[10px]' onClick={() => { 
+        localStorage.removeItem('pinnedProjects');
+        
+        logout()}}><p className='text-textGreen text-[10px]'>Cerrar sesión</p> </button>
     </div>
   );
 }

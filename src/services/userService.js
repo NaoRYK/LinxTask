@@ -1,8 +1,7 @@
 import { collection, doc, getDoc, getDocs } from "firebase/firestore";
 import { db } from "../config/firebaseConfig";
 
-
-  export const getUsers = async () => {
+export const getUsers = async () => {
     try {
         const usersCollectionRef = collection(db, 'users');
         const usersSnapshot = await getDocs(usersCollectionRef);
@@ -14,20 +13,38 @@ import { db } from "../config/firebaseConfig";
         return [];
     }
 };
+
 export const getUserDisplayNames = async (userIds) => {
     try {
-      const displayNames = [];
-      for (const userId of userIds) {
-        const userDocRef = doc(db, 'users', userId); // Asegúrate de tener una colección de 'users' en tu DB
+        const displayNames = [];
+        for (const userId of userIds) {
+            const userDocRef = doc(db, 'users', userId);
+            const userDoc = await getDoc(userDocRef);
+            if (userDoc.exists()) {
+                const userData = userDoc.data();
+                displayNames.push({ id: userId, name: userData.name });
+            }
+        }
+        return displayNames;
+    } catch (error) {
+        console.error("Error al obtener los nombres de los usuarios:", error);
+        return [];
+    }
+};
+
+// Función para obtener datos de usuario incluyendo photoURL
+export const getUserById = async (userId) => {
+    try {
+        const userDocRef = doc(db, 'users', userId);
         const userDoc = await getDoc(userDocRef);
         if (userDoc.exists()) {
-          const userData = userDoc.data();
-          displayNames.push({ id: userId, name: userData.name });
+            return userDoc.data(); // Asegúrate de que `photoURL` esté incluido en los datos
+        } else {
+            console.error("Usuario no encontrado");
+            return null;
         }
-      }
-      return displayNames;
     } catch (error) {
-      console.error("Error al obtener los nombres de los usuarios:", error);
-      return [];
+        console.error("Error al obtener el usuario:", error);
+        return null;
     }
-  };
+};

@@ -49,7 +49,7 @@ const TaskForm = ({ onCreateTask,refetchProject }) => {
             dueDate: taskDate,
             status: ['pendiente'],
             priority: taskPriority,
-            collaborators: selectedCollaborators,
+            assignedTo: selectedCollaborators,
             taskColor: taskColor // Asegúrate de que el color se incluya aquí
         };
 
@@ -97,7 +97,7 @@ const TaskForm = ({ onCreateTask,refetchProject }) => {
             />
             <TaskInput
                 label='Fecha de entrega'
-                type='date'
+                type='datetime-local'
                 value={taskDate}
                 onChange={(e) => setTaskDate(e.target.value)}
                 required

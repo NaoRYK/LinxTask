@@ -2,8 +2,10 @@ import { Link } from "react-router-dom";
 import attachFile from "../../assets/icons/attach_file.png";
 import trashCan from "../../assets/icons/delete.png";
 import keepOff from "../../assets/icons/keep_off.png";
+import useAuthStore from "../../stores/userStore";
 
 const PinnedProject = ({ project, onUnpinProject,onDelete }) => {
+  const {user} = useAuthStore()
 
   const handleDeleteClick = (e) => {
     e.preventDefault();
@@ -11,6 +13,7 @@ const PinnedProject = ({ project, onUnpinProject,onDelete }) => {
     if (window.confirm("¿Estás seguro de que deseas eliminar este proyecto?")) {
       onDelete(project?.id);
     }
+
   };
   return (
     <Link className="relative" to={`projects/${project?.id}`}>
@@ -29,7 +32,7 @@ const PinnedProject = ({ project, onUnpinProject,onDelete }) => {
 
         <div className="flex w-full justify-between">
           <div className="flex gap-2 text-tertiaryDark">
-            <button className="hover:bg-outlineGrey p-1 rounded-lg transition-all"
+           {project.creatorId === user.uid &&  <button className="hover:bg-outlineGrey p-1 rounded-lg transition-all"
             onClick={handleDeleteClick}
             >
               <img
@@ -37,7 +40,7 @@ const PinnedProject = ({ project, onUnpinProject,onDelete }) => {
                 className="w-[19.8px] h-[20.2px]"
                 alt="trash-icon"
               />
-            </button>
+            </button>}
             <button
               className="hover:bg-outlineGrey p-1 rounded-lg transition-all"
               onClick={(e) => {

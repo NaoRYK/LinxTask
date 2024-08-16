@@ -25,6 +25,8 @@ function AppRoutes() {
         setUser(user); // Actualiza el store con el usuario
       } else {
         clearUser(); // Limpia el store si no hay usuario
+        localStorage.removeItem('pinnedProjects');
+        
       }
     });
     toast.update(toastId, {
