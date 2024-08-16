@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 
 const AuthForm = ({ handleSubmit, children }) => {
   return (
-    <form onSubmit={handleSubmit} autoComplete='off'>
+    <form className='gap-2 flex flex-col' onSubmit={handleSubmit} autoComplete='off'>
       {children}
     </form>
   );

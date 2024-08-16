@@ -58,7 +58,7 @@ const Project = () => {
   if (!project) return <p>Loading...</p>;
 
   return (
-    <div>
+    <div className='mt-[80px]'>
       {openCreateModal && <TaskModal statuses={statuses}></TaskModal>}
       <h1>{project.name}</h1>
       <ul>

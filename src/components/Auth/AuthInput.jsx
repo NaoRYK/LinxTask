@@ -1,10 +1,9 @@
 import PropTypes from 'prop-types';
 
-const AuthInput = ({ type, value, onChange, placeholder, required = true, label, name }) => {
+const AuthInput = ({ type, value, onChange, placeholder, required = true, name }) => {
   return (
     <div>
-      {label && <label htmlFor={name}>{label}</label>}
-      <input
+      <input className='w-[400px] h-[60px] bg-[A9F1D2] placeholder:text-[15px] bg-inputGreen rounded-[30px] placeholder:font-semibold p-4 placeholder:text-primaryDark'
         type={type}
         value={value}
         onChange={onChange}

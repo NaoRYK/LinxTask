@@ -7,13 +7,22 @@ import ProjectCard from "../components/ProjectCard/ProjectCard";
 import Skeleton from "../components/Skeleton/Skeleton";
 import createProjectIcon from '../assets/icons/create-project.png';
 import { createProject, getAllUserProjectsWithTasks, deleteProject } from "../services/projectService";
+import CreateProjectModal from "../components/Project/CreateProjectModal";
 
 const Home = () => {
   const { user } = useAuthStore();
   const { storeProjects, setProjects, addProject } = useProjectStore();
   const [loading, setLoading] = useState(true);
   const [pinnedProjects, setPinnedProjects] = useState([]);
+  const [openCreateModal, setOpenCreateModal] = useState(false);
 
+  const closeModal = () => setOpenCreateModal(false);
+
+
+
+  const handleOpenProjectModal = () => {
+    setOpenCreateModal(!openCreateModal)
+  }
   useEffect(() => {
     if (user) {
       handleCheckProjects();
@@ -37,7 +46,7 @@ const Home = () => {
     }
   };
 
-  const handleCreateProject = async (projectName, collaborators, color) => {
+  const handleCreateProjectModal = async (projectName, collaborators, color) => {
     try {
       const newProject = await createProject(user, projectName, collaborators, color);
       addProject(newProject);
@@ -115,7 +124,7 @@ const Home = () => {
 
       {/* All Projects Section */}
       <section className="mt-[40px]">
-        <div className="flex gap-[22px] flex-wrap">
+        <div className="flex gap-[22px] flex-wrap ">
           {loading
             ? Array.from({ length: 3 }).map((_, index) => (
                 <Skeleton key={index} className="w-[535px] h-[205px] rounded-[10px]" />
@@ -135,10 +144,13 @@ const Home = () => {
         </div>
       </section>
       {/* END All Projects Section */}
-      <button className="fixed bottom-4 right-4">
+      <button className="fixed bottom-4 right-4" onClick={handleOpenProjectModal}>
         <img src={createProjectIcon} alt="create-project-icon" />
       </button>
-      <FormProject onCreateProject={handleCreateProject} />
+      
+      {openCreateModal && <CreateProjectModal onClose={closeModal}>
+        <FormProject onCreateProject={handleCreateProjectModal} onClose={closeModal} />
+        </CreateProjectModal>}
     </div>
   );
 };
