@@ -154,6 +154,7 @@ const getProjectTasks = async (projectId) => {
   
   //obtener todos los proyectos del usuario (creador o colaborador)
   export const getAllUserProjectsWithTasks = async (user) => {
+
     try {
       if (!user) {
         throw new Error("No hay usuario logueado");

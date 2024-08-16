@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import FormProject from "../components/Project/FormProject";
 import useAuthStore from "../stores/userStore";
-import { Link } from "react-router-dom";
 import PinnedProject from "../components/PinnedProject/PinnedProject";
 import useProjectStore from "../stores/projectStore";
 import ProjectCard from "../components/ProjectCard/ProjectCard";
@@ -11,29 +10,35 @@ import { createProject, getAllUserProjectsWithTasks } from "../services/projectS
 
 const Home = () => {
   const { user } = useAuthStore();
-  const { storeProjects, addProject } = useProjectStore();
-  const [loading, setLoading] = useState(true); // Estado de carga
+  const { storeProjects, setProjects, addProject } = useProjectStore();
+  const [loading, setLoading] = useState(true);
+  const [pinnedProjects, setPinnedProjects] = useState([]);
 
   useEffect(() => {
-    handleCheckProjects();
-  }, []);
+    if (user) {
+      handleCheckProjects();
+    }
+  }, [user]);
+
+  useEffect(() => {
+    const savedPinnedProjects = JSON.parse(localStorage.getItem('pinnedProjects')) || [];
+    setPinnedProjects(savedPinnedProjects);
+  }, [storeProjects]);
 
   const handleCheckProjects = async () => {
-    setLoading(true); // Inicia el estado de carga
+    setLoading(true);
     try {
-      // Obtener proyectos y actualizar el store
       const fetchedProjects = await getAllUserProjectsWithTasks(user);
-      fetchedProjects.forEach(project => addProject(project));
+      setProjects(fetchedProjects);
     } catch (error) {
       console.error("Error fetching projects:", error);
     } finally {
-      setLoading(false); // Finaliza el estado de carga
+      setLoading(false);
     }
   };
 
   const handleCreateProject = async (projectName, collaborators, color) => {
     try {
-      // Crea el proyecto y actualiza el store
       const newProject = await createProject(user, projectName, collaborators, color);
       addProject(newProject);
     } catch (error) {
@@ -41,9 +46,24 @@ const Home = () => {
     }
   };
 
-  useEffect(() => {
-    console.log(storeProjects);
-  }, [storeProjects]);
+  const togglePinProject = (project) => {
+    const isPinned = pinnedProjects.some(p => p.id === project.id);
+    let updatedPinnedProjects;
+
+    if (isPinned) {
+      return; // No hacer nada si el proyecto ya está fijado
+    }
+
+    updatedPinnedProjects = [...pinnedProjects, project];
+    setPinnedProjects(updatedPinnedProjects);
+    localStorage.setItem('pinnedProjects', JSON.stringify(updatedPinnedProjects));
+  };
+
+  const handleUnpinProject = (project) => {
+    const updatedPinnedProjects = pinnedProjects.filter(p => p.id !== project.id);
+    setPinnedProjects(updatedPinnedProjects);
+    localStorage.setItem('pinnedProjects', JSON.stringify(updatedPinnedProjects));
+  };
 
   return (
     <div className="p-[75px] relative min-h-screen">
@@ -58,7 +78,16 @@ const Home = () => {
             ? Array.from({ length: 3 }).map((_, index) => (
                 <Skeleton key={index} className="w-[250px] h-[150px] rounded-[10px]" />
               ))
-            : storeProjects?.map(project => <PinnedProject key={project.id} project={project} />)}
+            : pinnedProjects.length > 0
+              ? pinnedProjects.map(project => (
+                  <PinnedProject 
+                    key={project.id} 
+                    project={project} 
+                    onUnpinProject={handleUnpinProject} 
+                  />
+                ))
+              : <p className="text-gray-500">Todavía no hay proyectos fijados.</p>
+          }
         </div>
       </section>
       {/* END Pinned Projects Section */}
@@ -70,7 +99,17 @@ const Home = () => {
             ? Array.from({ length: 3 }).map((_, index) => (
                 <Skeleton key={index} className="w-[535px] h-[205px] rounded-[10px]" />
               ))
-            : storeProjects?.map(project => <ProjectCard key={project.id} project={project} />)}
+            : storeProjects.length > 0
+              ? [...storeProjects].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).map(project => (
+                  <ProjectCard 
+                    key={project.id} 
+                    project={project} 
+                    onTogglePin={togglePinProject}
+                    isPinned={pinnedProjects.some(p => p.id === project.id)} // Pasar el estado de fijado
+                  />
+                ))
+              : <p className="text-gray-500">Todavía no hay proyectos creados.</p>
+          }
         </div>
       </section>
       {/* END All Projects Section */}

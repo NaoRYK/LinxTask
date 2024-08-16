@@ -1,16 +1,16 @@
-import { faPaperclip, faThumbtackSlash, faTrash } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link } from "react-router-dom";
-import attachFile from '../../assets/icons/attach_file.png'
-import trashCan from '../../assets/icons/delete.png'
-import keepOff from '../../assets/icons/keep_off.png'
+import attachFile from "../../assets/icons/attach_file.png";
+import trashCan from "../../assets/icons/delete.png";
+import keepOff from "../../assets/icons/keep_off.png";
 
-const PinnedProject = ({ project }) => {
-  console.log("project", project);
-
+const PinnedProject = ({ project, onUnpinProject }) => {
   return (
     <Link className="relative" to={`projects/${project?.id}`}>
-      <img className="absolute top-[-15px] right-4 " src={attachFile} alt="attach-file-icon" />
+      <img
+        className="absolute top-[-15px] right-4 "
+        src={attachFile}
+        alt="attach-file-icon"
+      />
       <div
         className="w-[250px] h-[150px] rounded-[10px] p-4 flex flex-col justify-between shadow-md"
         style={{ backgroundColor: project.color }}
@@ -21,13 +21,37 @@ const PinnedProject = ({ project }) => {
 
         <div className="flex w-full justify-between">
           <div className="flex gap-2 text-tertiaryDark">
-            <img src={trashCan} className="w-[19.8px] h-[20.2px]" alt="trash-icon" ></img>
-            <img src={keepOff} className="w-[19.8px] h-[20.2px]"  alt="keepoficon" ></img>
+            <button className="hover:bg-outlineGrey p-1 rounded-lg transition-all">
+              <img
+                src={trashCan}
+                className="w-[19.8px] h-[20.2px]"
+                alt="trash-icon"
+              />
+            </button>
+            <button
+              className="hover:bg-outlineGrey p-1 rounded-lg transition-all"
+              onClick={(e) => {
+                e.preventDefault()
+                e.stopPropagation(); // Evita que el click se propague al Link
+                onUnpinProject(project);
+              }}
+            >
+              <img
+                src={keepOff}
+                className="w-[19.8px] h-[20.2px]"
+                alt="keepoff-icon"
+              />
+            </button>
           </div>
 
           <div className="flex">
             {project.collaborators?.length > 1 && (
-              <p><span className="font-semibold">{project?.collaborators?.length} </span> colaboradores</p>
+              <p>
+                <span className="font-semibold">
+                  {project?.collaborators?.length}
+                </span>{" "}
+                colaboradores
+              </p>
             )}
           </div>
         </div>

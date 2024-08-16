@@ -1,13 +1,15 @@
-import { faStar } from "@fortawesome/free-regular-svg-icons";
-import { faPaperclip, faThumbtackSlash, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faStar } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link } from "react-router-dom";
-import attachFile from '../../assets/icons/attach_file.png'
-import trashCan from '../../assets/icons/delete.png'
-import keep from '../../assets/icons/keep.png'
+import trashCan from '../../assets/icons/delete.png';
+import keep from '../../assets/icons/keep.png';
 
-const ProjectCard = ({ project }) => {
-  console.log("project", project);
+const ProjectCard = ({ project, onTogglePin, isPinned }) => {
+  const handlePinClick = (e) => {
+    e.preventDefault()
+    e.stopPropagation()
+    onTogglePin(project);
+  };
 
   return (
     <Link className="relative" to={`projects/${project?.id}`}>
@@ -17,13 +19,19 @@ const ProjectCard = ({ project }) => {
       >
         <div className="flex justify-between items-center">
           <p className="font-semibold">{project?.name}</p>
-          <FontAwesomeIcon icon={faStar}></FontAwesomeIcon>
+          {!isPinned && <button onClick={handlePinClick} >
+        <FontAwesomeIcon icon={faStar} className="hover:text-yellow-500"></FontAwesomeIcon>
+        </button>}
         </div>
 
         <div className="flex w-full justify-between">
           <div className="flex gap-2 text-tertiaryDark">
-            <img src={trashCan} className="w-[19.8px] h-[20.2px]" alt="trash-icon" ></img>
-            <img src={keep} className="w-[19.8px] h-[20.2px]"  alt="keepoficon" ></img>
+            <button onClick={handlePinClick} className="hover:bg-outlineGrey p-1 rounded-lg transition-all">
+              <img src={trashCan} className="w-[19.8px] h-[20.2px]" alt="trash-icon" />
+            </button>
+             { !isPinned && <button onClick={handlePinClick} className="hover:bg-outlineGrey p-1 rounded-lg transition-all" >
+              <img src={keep} className="w-[19.8px] h-[20.2px] cursor-pointer" alt="keep-icon" />
+            </button> }
           </div>
 
           <div className="flex">

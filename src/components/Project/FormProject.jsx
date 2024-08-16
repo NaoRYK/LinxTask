@@ -1,16 +1,12 @@
 import { useEffect, useState } from 'react';
-import { createProject } from '../../services/projectService';
-import useAuthStore from '../../stores/userStore';
 import { getUsers } from '../../services/userService';
 
-const FormProject = () => {
+const FormProject = ({ onCreateProject }) => {
     const [projectText, setProjectText] = useState('');
     const [projectColor, setProjectColor] = useState('#FFD1D1');
     const [users, setUsers] = useState([]);
     const [selectedCollaborators, setSelectedCollaborators] = useState([]);
     const [error, setError] = useState('');
-
-    const { user } = useAuthStore();
 
     useEffect(() => {
         const fetchUsers = async () => {
@@ -40,7 +36,7 @@ const FormProject = () => {
         }
 
         try {
-            await createProject(user, projectText, selectedCollaborators, projectColor);
+            await onCreateProject(projectText, selectedCollaborators, projectColor);
             setProjectText('');
             setSelectedCollaborators([]);
             setError('');
