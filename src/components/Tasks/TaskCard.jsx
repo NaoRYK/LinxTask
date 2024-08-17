@@ -6,24 +6,32 @@ import { deleteTask } from '../../services/taskService';
 import useAuthStore from '../../stores/userStore';
 import TaskInfoModal from '../Task/TaskInfoModal';
 import TaskSettingsModal from '../Task/TaskSettingsModal';
-import EditTaskModal from '../Task/EditTaskModal'; // Importa el modal de edición
+import TaskEditModal from '../Task/TaskEditModal'; // Asegúrate de importar el TaskEditModal
 
-const TaskCard = ({ task, statuses, onDeleteTask }) => {
+const TaskCard = ({ task, statuses, onDeleteTask, refetchProject }) => {
     const backgroundColor = task.taskColor || '#FFED88';
     const darkerColor = darkenColor(backgroundColor, 0.2);
     const darkestColor = darkenColor(backgroundColor, 0.4);
     const [openCardModal, setOpenCardModal] = useState(false);
     const [openCardSettingsModal, setOpenCardSettingsModal] = useState(false);
+    const [openTaskEditModal, setOpenTaskEditModal] = useState(false); // Estado para el modal de edición
     const { user } = useAuthStore();
-
-    const handleOpenCardModal = () => {
-        setOpenCardModal(true);
-    };
+    const handleOpenCardModal = (e) => {
+        if (e.target.classList.contains('taskCard')) {
+          setOpenCardModal(true);
+        }
+      };
 
     const handleToggleCardSettingsModal = (e) => {
         e.preventDefault();
-        e.stopPropagation();
-        setOpenCardSettingsModal(!openCardSettingsModal);
+        e.stopPropagation(); // Detiene la propagación del clic
+        if (e.target.closest('.taskCard button') || e.target.classList.contains('taskCard')) { // Verifica si el clic se originó en el botón de tres puntos
+          setOpenCardSettingsModal(!openCardSettingsModal);
+        }
+      };
+
+    const handleOpenTaskEditModal = () => {
+        setOpenTaskEditModal(true);
     };
 
     const handleCloseCardSettingsModal = () => {
@@ -34,7 +42,9 @@ const TaskCard = ({ task, statuses, onDeleteTask }) => {
         setOpenCardModal(false);
     };
 
-
+    const handleCloseTaskEditModal = () => {
+        setOpenTaskEditModal(false);
+    };
 
     const handleDeleteCard = () => {
         deleteTask(task.projectId, task.id);
@@ -64,42 +74,43 @@ const TaskCard = ({ task, statuses, onDeleteTask }) => {
     };
 
     return (
-        <div className='w-[410px] h-[250px] rounded-[10px] shadow-lg p-6 grid grid-rows-[25px,142px,35px] relative cursor-pointer' style={{ backgroundColor: backgroundColor }}
+        <div className='taskCard w-[410px] h-[250px] rounded-[10px] shadow-lg p-6 grid grid-rows-[25px,142px,35px] relative cursor-pointer' style={{ backgroundColor: backgroundColor }}
             onClick={handleOpenCardModal}
         >
             {task.creatorId === user.uid && <button
                 onClick={handleDeleteCard}
-                className='w-[30px] rounded-full h-[30px] text-[18px] bg-[#BC1919] text-[#761c1c] flex items-center justify-center absolute top-[-.5rem] right-[-.5rem]'
+                className='w-[30px] taskCard rounded-full h-[30px] text-[18px] bg-[#BC1919] text-[#761c1c] flex items-center justify-center absolute top-[-.5rem] right-[-.5rem]'
             >
                 <FontAwesomeIcon icon={faTrash} />
             </button>}
-            <div className='flex items-center gap-3'>
+            <div className='flex taskCard items-center gap-3'>
                 <FontAwesomeIcon style={{ color: darkestColor }} icon={faCaretRight} />
-                <h3 className='text-[24px] font-semibold' style={{ color: darkestColor }}>{task.name}</h3>
+                <h3 className='text-[24px] taskCard font-semibold' style={{ color: darkestColor }}>{task.name}</h3>
             </div>
-            <div className=''>
-                <p className='text-primaryDark/70 max-w-[336px] max-h-[142px] overflow-hidden text-ellipsis break-words'>{task.description}</p>
+            <div className='taskCard'>
+                <p className='text-primaryDark/70 taskCard max-w-[336px] max-h-[142px] overflow-hidden text-ellipsis break-words'>{task.description}</p>
             </div>
-            <div className='grid items-center grid-cols-[40px,90px,1fr] gap-3'>
+            <div className='grid taskCard items-center grid-cols-[40px,90px,1fr] gap-3'>
                 <button onClick={handleToggleCardSettingsModal} className='w-[30px] h-[30px] rounded-full flex items-center justify-center' style={{ backgroundColor: darkerColor }}>
                     <FontAwesomeIcon className='' icon={faEllipsisV} />
                 </button>
                 {openCardSettingsModal && (
                     <TaskSettingsModal
+                    refetchProject={refetchProject}
                         task={task}
                         onClose={handleCloseCardSettingsModal}
                         statuses={statuses}
-                         // Pasa la función para abrir el modal de edición
+                        onOpenEditModal={handleOpenTaskEditModal} // Pasar la función para abrir el modal de edición
                     />
                 )}
-                <div className='flex items-center gap-1'>
+                <div className='flex taskCard items-center gap-1'>
                     <FontAwesomeIcon icon={faClock} />
                     <p className='font-semibold text-[10px]'>{formattedDueDate}</p>
                 </div>
-                <div className='flex justify-end gap-[0.2rem]'>
+                <div className='flex taskCard justify-end gap-[0.2rem]'>
                     {task.priority && (
                         <p
-                            className='p-1 rounded-[10px] w-[110px] text-center h-[30px] text-[15px] font-semibold text-white overflow-hidden text-ellipsis'
+                            className='p-1 taskCard rounded-[10px] w-[110px] text-center h-[30px] text-[15px] font-semibold text-white overflow-hidden text-ellipsis'
                             style={{ backgroundColor: darkerColor }}
                         >
                             Prioritaria
@@ -108,7 +119,7 @@ const TaskCard = ({ task, statuses, onDeleteTask }) => {
                     {task.status.map((status, index) => (
                         <p
                             key={index}
-                            className='p-1 rounded-[10px] w-[110px] text-center h-[30px] text-[15px] font-semibold text-white overflow-hidden text-ellipsis'
+                            className='p-1 taskCard rounded-[10px] w-[110px] text-center h-[30px] text-[15px] font-semibold text-white overflow-hidden text-ellipsis'
                             style={{ backgroundColor: getStatusColor(status) }}
                         >
                             {status.charAt(0).toUpperCase() + status.slice(1)}
@@ -117,9 +128,14 @@ const TaskCard = ({ task, statuses, onDeleteTask }) => {
                 </div>
             </div>
             {openCardModal && <TaskInfoModal task={task} onClose={handleCloseCardModal} />}
-
-)
-
+            {openTaskEditModal && (
+                <TaskEditModal
+                    task={task}
+                    onClose={handleCloseTaskEditModal}
+                    statuses={statuses}
+                    refetchProject = {refetchProject}
+                />
+            )}
         </div>
     );
 };

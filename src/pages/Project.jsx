@@ -109,7 +109,7 @@ useEffect(() => {
   return false;
 }).map((task) => {
   if (task) {
-    return <TaskCard onDeleteTask={onDeleteTask} statuses={statuses} task={task} key={task.id} />;
+    return <TaskCard refetchProject={refetchProject} onDeleteTask={onDeleteTask} statuses={statuses} task={task} key={task.id} />;
   } else {
     return null;
   }

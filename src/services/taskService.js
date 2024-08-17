@@ -50,16 +50,11 @@ export const updateTaskPriority = async (projectId, taskId, newPriority) => {
     console.error("Error al actualizar la prioridad de la tarea:", error);
   }
 };
-export const updateTask = async (projectId, taskId, updatedData) => {
+export const updateTask = async (projectId, taskId, updatedTaskData) => {
   try {
-    // Referencia a la tarea en la subcolección 'tasks' del proyecto
-    const taskRef = doc(doc(db, 'projects', projectId), 'tasks', taskId);
-
-    // Actualizar el documento con los nuevos datos
-    await updateDoc(taskRef, updatedData);
-
-    console.log("Tarea actualizada exitosamente");
+    const taskRef = doc(db, 'projects', projectId, 'tasks', taskId);
+    await updateDoc(taskRef, updatedTaskData);
   } catch (error) {
-    console.error("Error al actualizar la tarea:", error);
+    console.error('Error al actualizar la tarea:', error);
   }
 };
