@@ -60,7 +60,7 @@ const FormProject = ({ onCreateProject, onClose }) => {
     };
 
     return (
-        <form onSubmit={handleSubmit} className=' text-white h-[90%]' autoComplete="off">
+        <form onSubmit={handleSubmit} className=' text-white h-[90%] ' autoComplete="off">
             {error && <p className="text-red-500">{error}</p>}
             <div className='flex items-center justify-between'>
                 <div className='bg-[#71E4B9] w-[600px]  h-[65px] rounded-[20px] flex shadow-md items-center justify-center gap-2'>
@@ -123,7 +123,7 @@ const FormProject = ({ onCreateProject, onClose }) => {
                     </select>
                 </div>
             </div>
-                        <div className='w-full flex justify-end gap-3'>             <button className='bg-[#17CF97] w-[140px] h-[60px] rounded-[100px] shadow-md text-[#077559] font-semibold mt-4' type="submit">Crear proyecto</button>
+                        <div className='w-full flex justify-end gap'>             <button className='bg-[#17CF97] w-[140px] h-[60px] rounded-[100px] shadow-md text-[#077559] font-semibold mt-4' type="submit">Crear proyecto</button>
                         <button className='bg-[#17CF97] w-[140px] h-[60px] rounded-[100px] shadow-md text-[#077559] font-semibold mt-4 ' onClick={onClose} >Cerrar</button></div>
         </form>
     );

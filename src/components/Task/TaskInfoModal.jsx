@@ -54,6 +54,7 @@ const TaskInfoModal = ({ task, onClose }) => {
 
     const backgroundColor = task.taskColor || '#FFED88';
     const darkerColor = darkenColor(backgroundColor, 0.4);
+    const darkColor = darkenColor(backgroundColor, 0.2);
 
     // Función para convertir `createdAt` a una fecha formateada
     const parseDate = (date) => {
@@ -128,7 +129,10 @@ const TaskInfoModal = ({ task, onClose }) => {
                    </div>
                     
                 </div>
+                <div  className='rounded-[20px] p-2' style={{backgroundColor:darkColor}}>
+
                 <p className="text-primaryDark/80">{task.description}</p>
+                </div>
 
                 <div className="font-bold flex items-center justify-between" style={{color: darkerColor}}>
                     <p>

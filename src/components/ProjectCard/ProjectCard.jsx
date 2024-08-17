@@ -23,7 +23,7 @@ const ProjectCard = ({ project, onTogglePin, isPinned, onDelete }) => {
   const {user} = useAuthStore()
 
   return (
-    <Link className="relative" to={`projects/${project?.id}`}>
+    <Link className="relative " to={`projects/${project?.id}`}>
       <div
         className="w-[535px] h-[205px] rounded-[10px] p-4 flex flex-col justify-between shadow-md"
         style={{ backgroundColor: project.color }}

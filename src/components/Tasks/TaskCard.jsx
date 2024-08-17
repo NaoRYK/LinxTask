@@ -65,7 +65,7 @@ const TaskCard = ({ task, statuses, onDeleteTask }) => {
                 <h3 className='text-[24px] font-semibold' style={{color:darkestColor}}>{task.name}</h3>
             </div>
             <div className=''>
-                <p className='text-primaryDark/70 max-w-[336px] max-h-[142px] overflow-hidden text-ellipsis break-words'>{task.description}</p>
+                <p className='text-primaryDark/70 max-w-[336px] max-h-[142px] overflow-hidden text-ellipsis break-words '>{task.description}</p>
             </div>
             <div className='grid items-center grid-cols-[40px,90px,1fr] gap-3'>
                 <div className='w-[30px] h-[30px] rounded-full flex items-center justify-center' style={{ backgroundColor: darkerColor }}>

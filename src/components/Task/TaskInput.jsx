@@ -1,16 +1,31 @@
 import PropTypes from 'prop-types';
 
-const TaskInput = ({ label, type = 'text', value = '', onChange, placeholder = '', required = false, checked = false, options = [], min }) => {
+const TaskInput = ({ 
+    label, 
+    type = 'text', 
+    value = '', 
+    onChange, 
+    placeholder = '', 
+    required = false, 
+    checked = false, 
+    options = [], 
+    min, 
+    inputStyles = '', 
+    labelStyles = '', 
+    darkestColor = '#000000', 
+    darkenedColor = '#333333'
+}) => {
     if (type === 'select') {
         return (
-            <label>
+            <label className={labelStyles} style={{ color: darkestColor }}>
                 {label}
                 <select
                     value={value}
                     onChange={onChange}
                     required={required}
                     multiple
-                    className='w-[200px]'
+                    className={`w-[200px] ${inputStyles}`}
+                    style={{ backgroundColor: darkenedColor, color: darkestColor }}
                 >
                     {options.map(option => (
                         <option key={option.value} value={option.value}>
@@ -24,11 +39,13 @@ const TaskInput = ({ label, type = 'text', value = '', onChange, placeholder = '
 
     if (type === 'checkbox') {
         return (
-            <label>
+            <label className={labelStyles} style={{ color: darkestColor }}>
                 <input
                     type="checkbox"
                     checked={checked}
                     onChange={onChange}
+                    className={inputStyles}
+                    style={{ accentColor: darkenedColor }}
                 />
                 {label}
             </label>
@@ -37,12 +54,14 @@ const TaskInput = ({ label, type = 'text', value = '', onChange, placeholder = '
 
     if (type === 'color') {
         return (
-            <label>
+            <label className={labelStyles} style={{ color: darkestColor }}>
                 {label}
                 <input
                     type="color"
                     value={value}
                     onChange={onChange}
+                    className={inputStyles}
+                    style={{ backgroundColor: value }} // El color de fondo del input color se establece automáticamente
                 />
             </label>
         );
@@ -50,21 +69,23 @@ const TaskInput = ({ label, type = 'text', value = '', onChange, placeholder = '
 
     if (type === 'datetime-local') {
         return (
-            <label>
+            <label className={labelStyles} style={{ color: darkestColor }}>
                 {label}
                 <input
                     type="datetime-local"
                     value={value}
                     onChange={onChange}
                     required={required}
-                    min={min} // Para el caso de datetime-local, puede ser útil
+                    min={min}
+                    className={inputStyles}
+                    style={{ backgroundColor: darkenedColor, color: darkestColor }}
                 />
             </label>
         );
     }
 
     return (
-        <label>
+        <label className={labelStyles} style={{ color: darkestColor }}>
             {label}
             <input
                 type={type}
@@ -73,6 +94,8 @@ const TaskInput = ({ label, type = 'text', value = '', onChange, placeholder = '
                 placeholder={placeholder}
                 required={required}
                 min={type === 'date' ? min : undefined}
+                className={inputStyles}
+                style={{ backgroundColor: darkenedColor, color: darkestColor }}
             />
         </label>
     );
@@ -80,11 +103,11 @@ const TaskInput = ({ label, type = 'text', value = '', onChange, placeholder = '
 
 TaskInput.propTypes = {
     label: PropTypes.string.isRequired,
-    type: PropTypes.oneOf(['text', 'textarea', 'date', 'checkbox', 'color', 'select', 'datetime-local']), // Añadido datetime-local
+    type: PropTypes.oneOf(['text', 'textarea', 'date', 'checkbox', 'color', 'select', 'datetime-local']),
     value: PropTypes.oneOfType([
         PropTypes.string,
         PropTypes.bool,
-        PropTypes.array // Para el caso del select múltiple
+        PropTypes.array
     ]),
     onChange: PropTypes.func.isRequired,
     placeholder: PropTypes.string,
@@ -96,7 +119,11 @@ TaskInput.propTypes = {
             label: PropTypes.string.isRequired
         })
     ),
-    min: PropTypes.string // Añadido para el caso del input de fecha y datetime-local
+    min: PropTypes.string,
+    inputStyles: PropTypes.string,
+    labelStyles: PropTypes.string,
+    darkestColor: PropTypes.string,
+    darkenedColor: PropTypes.string
 };
 
 export default TaskInput;

@@ -97,8 +97,8 @@ useEffect(() => {
 
   return (
     <div className='mt-[80px] p-4 flex items-center justify-center flex-col'>
-      {openCreateModal && <TaskModal statuses={statuses}         refetchProject={refetchProject} // Pasa la función refetchProject como prop
- onCreateTask={onCreateTask}></TaskModal>}
+      {openCreateModal && <TaskModal onClose={() => {setOpenCreateModal(false)}} statuses={statuses} project={project}        refetchProject={refetchProject} // Pasa la función refetchProject como prop
+ onCreateTask={onCreateTask}></TaskModal> }
 
     <ProjectContainer handleAddCollaboratorsButton={handleAddCollaboratorsButton} project={project} createTask={handleCreateTaskButton}>
       <div className='p-8 flex flex-wrap gap-4 justify-center overflow-y-auto'>
