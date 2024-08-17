@@ -1,4 +1,4 @@
-import  { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { getProjectByIdWithTasks } from '../services/projectService';
 import TaskModal from '../components/Task/TaskModal';
@@ -11,64 +11,65 @@ import useAuthStore from '../stores/userStore';
 const Project = () => {
   const { projectId } = useParams(); // Obtén projectId de la URL
   const [project, setProject] = useState(null);
-  const [statuses, setStatuses] = useState([])
-  const [openCreateModal, setOpenCreateModal] = useState(false)
+  const [statuses, setStatuses] = useState([]);
+  const [openCreateModal, setOpenCreateModal] = useState(false);
   const [openCollaboratorsModal, setOpenCollaboratorsModal] = useState(false);
-  const {user} = useAuthStore();
-  
+  const { user } = useAuthStore();
+
   const handleCreateTaskButton = () => {
-    setOpenCreateModal(true)
-  }
+    setOpenCreateModal(true);
+  };
+
   const handleAddCollaboratorsButton = () => {
-
-    if(project.creatorId === user.uid){
-      
+    if (project.creatorId === user.uid) {
       setOpenCollaboratorsModal(!openCollaboratorsModal);
+    } else {
+      alert("Debe ser administrador o creador del proyecto para añadir participantes");
     }
-    else{
-      alert("Debe ser administrador o creador del proyecto para añadir participantes")
+  };
+
+  const onCreateTask = (newTask) => {
+    setProject((prevProject) => ({
+      ...prevProject,
+      tasks: [...prevProject.tasks, newTask],
+    }));
+  };
+
+  const onDeleteTask = (taskId) => {
+    setProject((prevProject) => ({
+      ...prevProject,
+      tasks: prevProject.tasks.filter((task) => task.id !== taskId),
+    }));
+  };
+
+  const refetchProject = async () => {
+    try {
+      const fetchedProject = await getProjectByIdWithTasks(projectId);
+      setProject(fetchedProject);
+    } catch (error) {
+      console.error("Error al refetch el proyecto:", error);
     }
-};
-const onCreateTask = (newTask) => {
-  setProject((prevProject) => ({
-    ...prevProject,
-    tasks: [...prevProject.tasks, newTask],
-  }));
-};
+  };
 
-const onDeleteTask = (taskId) => {
-  setProject((prevProject) => ({
-    ...prevProject,
-    tasks: prevProject.tasks.filter((task) => task.id !== taskId),
-  }));
-};
-const refetchProject = async () => {
-  try {
-    const fetchedProject = await getProjectByIdWithTasks(projectId);
-    setProject(fetchedProject);
-  } catch (error) {
-    console.error("Error al refetch el proyecto:", error);
-  }
-};
+  useEffect(() => {
+    refetchProject();
+  }, [projectId]);
 
-useEffect(() => {
-  refetchProject();
-}, [projectId]);
   useEffect(() => {
     const fetchStatuses = async () => {
-        try {
-            const statusList = await getTaskStatuses(projectId);
-            console.log("Estados obtenidos:", statusList); // Agrega este console.log para depuración
-            setStatuses(statusList);
-        } catch (error) {
-            console.error("Error al cargar los estados:", error);
-        }
+      try {
+        const statusList = await getTaskStatuses(projectId);
+        console.log("Estados obtenidos:", statusList); // Agrega este console.log para depuración
+        setStatuses(statusList);
+      } catch (error) {
+        console.error("Error al cargar los estados:", error);
+      }
     };
 
     if (projectId) {
-        fetchStatuses();
+      fetchStatuses();
     }
-}, [projectId]);
+  }, [projectId]);
 
   useEffect(() => {
     const fetchProject = async () => {
@@ -80,8 +81,7 @@ useEffect(() => {
       try {
         const fetchedProject = await getProjectByIdWithTasks(projectId);
         setProject(fetchedProject);
-        console.log("proyecto",project);
-        
+        console.log("proyecto", fetchedProject);
       } catch (error) {
         console.error("Error fetching project:", error);
       }
@@ -90,41 +90,53 @@ useEffect(() => {
     fetchProject();
   }, [projectId]);
 
-
-
   if (!project) return <p>Loading...</p>;
 
   return (
     <div className='mt-[80px] p-4 flex items-center justify-center flex-col'>
-      {openCreateModal && <TaskModal onClose={() => {setOpenCreateModal(false)}} statuses={statuses} project={project}        refetchProject={refetchProject} // Pasa la función refetchProject como prop
- onCreateTask={onCreateTask}></TaskModal> }
+      {openCreateModal && (
+        <TaskModal
+          onClose={() => setOpenCreateModal(false)}
+          statuses={statuses}
+          project={project}
+          refetchProject={refetchProject} // Pasa la función refetchProject como prop
+          onCreateTask={onCreateTask}
+        />
+      )}
 
-    <ProjectContainer handleAddCollaboratorsButton={handleAddCollaboratorsButton} project={project} createTask={handleCreateTaskButton}>
-      <div className='p-8 flex flex-wrap gap-4 justify-center overflow-y-auto'>
-      {project.tasks && project.tasks.length > 0 ? project.tasks.filter((task) => {
-  if (task && task.assignedTo && task.creatorId) {
-    return task.assignedTo.includes(user.uid) || task.creatorId === user.uid;
-  }
-  return false;
-}).map((task) => {
-  if (task) {
-    return <TaskCard refetchProject={refetchProject} onDeleteTask={onDeleteTask} statuses={statuses} task={task} key={task.id} />;
-  } else {
-    return null;
-  }
-}):  <h2>Todavia no hay ninguna task creada...</h2>}
-      </div>
+      <ProjectContainer
+        handleAddCollaboratorsButton={handleAddCollaboratorsButton}
+        project={project}
+        createTask={handleCreateTaskButton}
+      >
+        <div className='p-8 flex flex-wrap gap-4 justify-center overflow-y-auto'>
+          {project.tasks && project.tasks.length > 0 ? (
+            project.tasks.filter((task) => {
+              if (task && task.assignedTo && task.creatorId) {
+                return task.assignedTo.includes(user.uid) || task.creatorId === user.uid;
+              }
+              return false;
+            }).map((task) => (
+              <TaskCard
+                refetchProject={refetchProject}
+                onDeleteTask={onDeleteTask}
+                statuses={statuses}
+                task={task}
+                key={task.id}
+              />
+            ))
+          ) : (
+            <p>Todavía no hay ninguna tarea creada...</p>
+          )}
+        </div>
+      </ProjectContainer>
 
-    </ProjectContainer>
-
-      
       {openCollaboratorsModal && (
-                <AddCollaboratorsModal
-                    projectId={projectId}
-                    onClose={() => setOpenCollaboratorsModal(false)}
-                />
-            )}
-
+        <AddCollaboratorsModal
+          projectId={projectId}
+          onClose={() => setOpenCollaboratorsModal(false)}
+        />
+      )}
     </div>
   );
 };

@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import { useState, useEffect } from 'react';
 import { getUsers } from '../../services/userService';
 import { addCollaboratorsToProject, getProjectCollaborators } from '../../services/projectService';
+import useAuthStore from '../../stores/userStore';
 
 const AddCollaboratorsModal = ({ projectId, onClose }) => {
   const [users, setUsers] = useState([]);
@@ -57,9 +58,9 @@ const AddCollaboratorsModal = ({ projectId, onClose }) => {
       onClose(); // También debes llamar a onClose() aquí
     }
   };
-
-  const filteredUsers = users.filter((user) => !existingCollaborators.includes(user.id));
-
+  
+  const {user} = useAuthStore()  
+  const filteredUsers = users.filter((filteredUser) => !existingCollaborators.includes(filteredUser.id) && filteredUser.id !== user.uid);
   return (
     showModal && (
     <div

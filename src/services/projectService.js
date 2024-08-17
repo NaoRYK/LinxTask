@@ -19,19 +19,7 @@ export const createProject = async (user, projectName, collaborators = null, col
     });
     console.log("Proyecto agregado");
 
-    // Crear la tarea inicial
-    const initialTask = {
-      name: "Bienvenido",
-      description: "Esto es una tarea de ejemplo",
-      assignedTo: [user.uid],
-      dueDate: new Date(),
-      status: ["pendiente"],
-      prioritary: true,
-      createdAt: new Date(),
-      creatorName: user.displayName,
-      taskColor:'#FFED88'
-    };
-    await addDoc(collection(db, 'projects', projectRef.id, 'tasks'), initialTask);
+
 
     // Crear los estados iniciales
     const initialStatuses = [

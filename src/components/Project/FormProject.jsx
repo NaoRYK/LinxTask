@@ -3,6 +3,7 @@ import { getUsers } from "../../services/userService";
 import colorSelectorIcon from "../../assets/icons/color-swatch.png";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
+import useAuthStore from "../../stores/userStore";
 
 const FormProject = ({ onCreateProject, onClose }) => {
   const [projectText, setProjectText] = useState("");
@@ -28,11 +29,12 @@ const FormProject = ({ onCreateProject, onClose }) => {
     fetchUsers();
   }, []);
 
+  const {user} = useAuthStore()
   useEffect(() => {
     // Filtrar usuarios basados en el valor del filtro
-    const filtered = users.filter((user) =>
-      user.name.toLowerCase().includes(filter.toLowerCase())
-    );
+    const filtered = users.filter((filteredUser) =>
+        filteredUser.name.toLowerCase().includes(filter.toLowerCase()) && filteredUser.id !== user.uid
+      );
     setFilteredUsers(filtered);
   }, [filter, users]);
 
