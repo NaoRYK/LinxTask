@@ -10,8 +10,10 @@ import { storage } from '../config/firebaseConfig'; // Asegúrate de importar el
 const auth = getAuth(app);
 const db = getFirestore(app);
 
+const defaultProfilePictureURL = "https://firebasestorage.googleapis.com/v0/b/linxapp-8be88.appspot.com/o/profilePictures%2FdefaultProfilePicturepng.png?alt=media&token=8ec0dab6-30bc-4885-b7c9-7c12bcf87491";
+
 export const uploadProfilePicture = async (file, userId) => {
-  if (!file) return null;
+  if (!file) return defaultProfilePictureURL;
 
   const storageRef = ref(storage, `profilePictures/${userId}/${file.name}`);
   try {
@@ -20,9 +22,11 @@ export const uploadProfilePicture = async (file, userId) => {
     return photoURL;
   } catch (error) {
     console.error("Error al subir la foto de perfil:", error);
-    return null;
+    return defaultProfilePictureURL;
   }
 };
+
+
 export const createAccount = async (email, password, name, file) => {
   if (name) {
     const toastId = toast.loading("Procesando...");
@@ -32,13 +36,14 @@ export const createAccount = async (email, password, name, file) => {
       const user = userCredential.user;
 
       // Subir la foto de perfil si existe
-      const photoURL = file ? await uploadProfilePicture(file, user.uid) : defaultProfilePicture;
+      const photoURL = file ? await uploadProfilePicture(file, user.uid) : defaultProfilePictureURL;
 
       // Actualiza el perfil del usuario con el nombre de usuario y foto de perfil
       await updateProfile(user, { displayName: name, photoURL });
 
       // Guarda el nombre de usuario, correo electrónico y foto de perfil en Firestore
       await setDoc(doc(db, 'users', user.uid), {
+        uid: user.uid, // Asegúrate de incluir el uid
         name,
         email,
         photoURL
@@ -90,6 +95,7 @@ export const createAccountWithGoogle = async (e) => {
 
     // Guarda la información del usuario en Firestore
     await setDoc(doc(db, 'users', user.uid), {
+      uid: user.uid, // Asegúrate de incluir el uid
       name: user.displayName,
       email: user.email,
       photoURL: user.photoURL // Guarda la URL de la foto de perfil
@@ -117,7 +123,6 @@ export const createAccountWithGoogle = async (e) => {
     throw new Error(error.message);
   }
 };
-
 
 export const logInAccount = async (email, password) => {
   const toastId = toast.loading("Ingresando...");

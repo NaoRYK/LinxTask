@@ -33,6 +33,7 @@ export const getUserDisplayNames = async (userIds) => {
 };
 
 // Función para obtener datos de usuario incluyendo photoURL
+
 export const getUserById = async (userId) => {
     try {
         const userDocRef = doc(db, 'users', userId);

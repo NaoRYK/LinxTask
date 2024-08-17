@@ -1,11 +1,19 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
-import { getUserById, getUserDisplayNames } from '../../services/userService';
+import { getUserById, getUserDisplayNames } from '../../services/userService'; 
+import { getTaskStatuses } from '../../services/statusService'; 
 
 const TaskInfoModal = ({ task, onClose }) => {
     const modalRef = useRef(null);
-    const [creatorData, setCreatorData] = useState() 
+    const [creatorData, setCreatorData] = useState();
+    const [statuses, setStatuses] = useState([]);
+    const [collaborators, setCollaborators] = useState([]);
+
+    const getStatusColor = (status) => {
+        const statusObj = statuses.find(s => s.name === status);
+        return statusObj ? statusObj.color : '#6d6262';
+    };
 
     // Maneja el clic fuera del modal
     const handleClickOutside = (event) => {
@@ -22,70 +30,112 @@ const TaskInfoModal = ({ task, onClose }) => {
             }
         };
 
+        const fetchStatuses = async () => {
+            const fetchedStatuses = await getTaskStatuses();
+            setStatuses(fetchedStatuses);
+        };
+
+        const fetchCollaborators = async () => {
+            if (task.assignedTo && task.assignedTo.length > 0) {
+                const fetchedCollaborators = await getUserDisplayNames(task.assignedTo);
+                setCollaborators(fetchedCollaborators);
+            }
+        };
+
         fetchCreatorData();
+        fetchStatuses();
+        fetchCollaborators();
 
         document.addEventListener('mousedown', handleClickOutside);
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
         };
-        
-    }, []);
+    }, [task.creatorId, task.assignedTo, onClose]);
 
-
-    useEffect(() => {
-      
-    console.log(creatorData);
-    
-    }, [creatorData])
-    
     const backgroundColor = task.taskColor || '#FFED88';
     const darkerColor = darkenColor(backgroundColor, 0.4);
 
-    const parseDueDate = (dueDate) => {
-        if (dueDate && dueDate.seconds) {
-            return new Date(dueDate.seconds * 1000);
-        } else if (dueDate && !isNaN(Date.parse(dueDate))) {
-            return new Date(dueDate);
+    // Función para convertir `createdAt` a una fecha formateada
+    const parseDate = (date) => {
+        if (date && date.seconds) {
+            return new Date(date.seconds * 1000);
+        } else if (date && !isNaN(Date.parse(date))) {
+            return new Date(date);
         } else {
             return new Date();
         }
     };
 
-    const dueDateTimestamp = parseDueDate(task.dueDate);
+    const createdAtTimestamp = parseDate(task.createdAt);
+    const formattedCreatedAt = isNaN(createdAtTimestamp) ? 'Fecha inválida' : createdAtTimestamp.toLocaleDateString('es-ES', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit'
+    });
+
+    const dueDateTimestamp = parseDate(task.dueDate);
     const formattedDueDate = isNaN(dueDateTimestamp) ? 'Fecha inválida' : dueDateTimestamp.toLocaleDateString('es-ES', {
         year: 'numeric',
         month: '2-digit',
         day: '2-digit'
     });
 
-
-    
     return (
-        <div className="fixed inset-0 flex items-center justify-center z-50 cursor-default" style={{ backdropFilter: 'blur(5px)' }}>
+        <div className="fixed inset-0  flex  items-center justify-center z-50 cursor-default" style={{ backdropFilter: 'blur(5px)' }}>
             <div
-                className="bg-white p-6 rounded-lg shadow-lg  w-[1000px] h-[755px] relative"
+                className="bg-white p-6 rounded-lg shadow-lg w-[1000px] grid grid-rows-[60px,100px,1fr,60px] h-[755px] relative"
                 ref={modalRef}
-                style={{backgroundColor:task.taskColor}}
+                style={{ backgroundColor: task.taskColor }}
             >
                 <button
-                    onClick={onClose}
-                    className="absolute top-4 right-4 text-gray-600 hover:text-gray-800"
+                                        onClick={(e) => {
+                                            e.stopPropagation(); // Esto evita que el evento se propague a elementos padres
+                                            console.log('Close button clicked');
+                                            onClose();
+                                        }}
+                    className="absolute top-4 right-4 text-primaryDark hover:text-gray-800"
                 >
                     <FontAwesomeIcon icon={faTimes} size="lg" />
                 </button>
-                <h2 className="text-[48px]  font-bold mb-4" style={{ color: darkerColor }}>
+                <h2 className="text-[48px] font-bold mb-4" style={{ color: darkerColor }}>
                     {task.name}
                 </h2>
-                <p className="text-gray-700 mb-4">{task.description}</p>
-                <p className="text-gray-500 mb-2">
-                    <strong>Fecha de Entrega:</strong> {formattedDueDate}
-                </p>
-                <p className="text-gray-500 mb-2">
-                    <strong>Prioridad:</strong> {task.priority ? 'Alta' : 'Normal'}
-                </p>
-                <p className="text-gray-500">
-                    <strong>Colaboradores:</strong> {task.assignedTo.join(', ')}
-                </p>
+                <div className='flex items-center justify-between gap-2'>
+                    <div className='flex items-center justify-center gap-x-2'>
+                        {creatorData && (
+                            <>
+                                <img className='rounded-full h-[40px] w-[40px]' src={creatorData.photoURL} alt={creatorData.name} />
+                                <div className='font-bold' style={{ color: darkerColor }}>
+                                    <p className='text-[20px]'>Por {creatorData.name}</p>
+                                    <p className='text-[12px]'>Creado el {formattedCreatedAt}</p>
+                                </div>
+                            </>
+                        )}
+                    </div>
+                   <div className='flex gap-2 flex-wrap'>
+                   {task.priority && <p
+                            className='p-1 rounded-[10px] bg-red-600 w-[110px] text-center h-[30px] text-[15px] font-semibold text-white overflow-hidden text-ellipsis'
+                        >Prioritaria</p>}
+                    {task.status && task.status.map((status, index) => (
+                        <p
+                            key={index}
+                            className='p-1 rounded-[10px] w-[110px] text-center h-[30px] text-[15px] font-semibold text-white overflow-hidden text-ellipsis'
+                            style={{ backgroundColor: getStatusColor(status) }}
+                        >
+                            {status.charAt(0).toUpperCase() + status.slice(1)}
+                        </p>
+                    ))}
+                   </div>
+                    
+                </div>
+                <p className="text-primaryDark/80">{task.description}</p>
+
+                <div className="font-bold flex items-center justify-between" style={{color: darkerColor}}>
+                    <p>
+                        Colaboradores: <span className='text-primaryDark'>{collaborators.map(collab => collab.name).join(', ')}</span>
+                    </p>
+                    <p>Fecha limite: <span className='text-primaryDark'> {formattedDueDate}</span></p>
+                </div>
             </div>
         </div>
     );

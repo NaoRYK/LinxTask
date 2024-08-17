@@ -19,6 +19,8 @@ const TaskCard = ({ task, statuses, onDeleteTask }) => {
 
     const handleCloseCardModal = () => {
         setOpenCardModal(false);
+        console.log('Cerrando el modal');
+
     };
 
     const handleDeleteCard = () => {
