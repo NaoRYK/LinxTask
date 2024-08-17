@@ -5,23 +5,36 @@ import React, { useState } from 'react';
 import { deleteTask } from '../../services/taskService';
 import useAuthStore from '../../stores/userStore';
 import TaskInfoModal from '../Task/TaskInfoModal';
+import TaskSettingsModal from '../Task/TaskSettingsModal';
+import EditTaskModal from '../Task/EditTaskModal'; // Importa el modal de edición
 
 const TaskCard = ({ task, statuses, onDeleteTask }) => {
     const backgroundColor = task.taskColor || '#FFED88';
     const darkerColor = darkenColor(backgroundColor, 0.2);
     const darkestColor = darkenColor(backgroundColor, 0.4);
     const [openCardModal, setOpenCardModal] = useState(false);
+    const [openCardSettingsModal, setOpenCardSettingsModal] = useState(false);
     const { user } = useAuthStore();
 
     const handleOpenCardModal = () => {
         setOpenCardModal(true);
     };
 
+    const handleToggleCardSettingsModal = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setOpenCardSettingsModal(!openCardSettingsModal);
+    };
+
+    const handleCloseCardSettingsModal = () => {
+        setOpenCardSettingsModal(false);
+    };
+
     const handleCloseCardModal = () => {
         setOpenCardModal(false);
-        console.log('Cerrando el modal');
-
     };
+
+
 
     const handleDeleteCard = () => {
         deleteTask(task.projectId, task.id);
@@ -51,7 +64,7 @@ const TaskCard = ({ task, statuses, onDeleteTask }) => {
     };
 
     return (
-        <div className='w-[410px] h-[250px] rounded-[10px] shadow-lg p-6 grid grid-rows-[25px,142px,35px] relative  cursor-pointer' style={{ backgroundColor: backgroundColor }}
+        <div className='w-[410px] h-[250px] rounded-[10px] shadow-lg p-6 grid grid-rows-[25px,142px,35px] relative cursor-pointer' style={{ backgroundColor: backgroundColor }}
             onClick={handleOpenCardModal}
         >
             {task.creatorId === user.uid && <button
@@ -61,28 +74,37 @@ const TaskCard = ({ task, statuses, onDeleteTask }) => {
                 <FontAwesomeIcon icon={faTrash} />
             </button>}
             <div className='flex items-center gap-3'>
-                <FontAwesomeIcon  style={{color:darkestColor}} icon={faCaretRight} />
-                <h3 className='text-[24px] font-semibold' style={{color:darkestColor}}>{task.name}</h3>
+                <FontAwesomeIcon style={{ color: darkestColor }} icon={faCaretRight} />
+                <h3 className='text-[24px] font-semibold' style={{ color: darkestColor }}>{task.name}</h3>
             </div>
             <div className=''>
-                <p className='text-primaryDark/70 max-w-[336px] max-h-[142px] overflow-hidden text-ellipsis break-words '>{task.description}</p>
+                <p className='text-primaryDark/70 max-w-[336px] max-h-[142px] overflow-hidden text-ellipsis break-words'>{task.description}</p>
             </div>
             <div className='grid items-center grid-cols-[40px,90px,1fr] gap-3'>
-                <div className='w-[30px] h-[30px] rounded-full flex items-center justify-center' style={{ backgroundColor: darkerColor }}>
+                <button onClick={handleToggleCardSettingsModal} className='w-[30px] h-[30px] rounded-full flex items-center justify-center' style={{ backgroundColor: darkerColor }}>
                     <FontAwesomeIcon className='' icon={faEllipsisV} />
-                </div>
+                </button>
+                {openCardSettingsModal && (
+                    <TaskSettingsModal
+                        task={task}
+                        onClose={handleCloseCardSettingsModal}
+                        statuses={statuses}
+                         // Pasa la función para abrir el modal de edición
+                    />
+                )}
                 <div className='flex items-center gap-1'>
                     <FontAwesomeIcon icon={faClock} />
                     <p className='font-semibold text-[10px]'>{formattedDueDate}</p>
                 </div>
                 <div className='flex justify-end gap-[0.2rem]'>
-                {task.priority &&                         <p
-                           
-                           className='p-1 rounded-[10px] w-[110px] text-center h-[30px] text-[15px] font-semibold text-white overflow-hidden text-ellipsis'
-                           style={{ backgroundColor: darkerColor }}
-                       >
-                           Prioritaria
-                       </p>}
+                    {task.priority && (
+                        <p
+                            className='p-1 rounded-[10px] w-[110px] text-center h-[30px] text-[15px] font-semibold text-white overflow-hidden text-ellipsis'
+                            style={{ backgroundColor: darkerColor }}
+                        >
+                            Prioritaria
+                        </p>
+                    )}
                     {task.status.map((status, index) => (
                         <p
                             key={index}
@@ -92,11 +114,12 @@ const TaskCard = ({ task, statuses, onDeleteTask }) => {
                             {status.charAt(0).toUpperCase() + status.slice(1)}
                         </p>
                     ))}
-
-
                 </div>
             </div>
             {openCardModal && <TaskInfoModal task={task} onClose={handleCloseCardModal} />}
+
+)
+
         </div>
     );
 };
