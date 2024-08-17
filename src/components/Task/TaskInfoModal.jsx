@@ -91,7 +91,6 @@ const TaskInfoModal = ({ task, onClose }) => {
                 <button
                                         onClick={(e) => {
                                             e.stopPropagation(); // Esto evita que el evento se propague a elementos padres
-                                            console.log('Close button clicked');
                                             onClose();
                                         }}
                     className="absolute top-4 right-4 text-primaryDark hover:text-gray-800"

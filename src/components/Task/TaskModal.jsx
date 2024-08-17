@@ -30,7 +30,6 @@ const TaskModal = ({ statuses, project, onCreateTask, refetchProject, onClose })
   const darkestColor = darkenHexColor(projectColor, 40); // Oscurece el color en un 20%
   const darkenedColor = darkenHexColor(projectColor, 20); // Oscurece el color en un 20%
 
-  console.log(darkenedColor);
   
   const handleBackgroundClick = (event) => {
     if (event.target === event.currentTarget) {

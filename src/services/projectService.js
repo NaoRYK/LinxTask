@@ -246,7 +246,6 @@ export const getProjectCollaborators = async (projectId) => {
           // Obtener la lista de colaboradores
           const collaborators = projectData.collaborators || [];
           
-          console.log("Colaboradores:", collaborators);
           
           return collaborators;
       } else {

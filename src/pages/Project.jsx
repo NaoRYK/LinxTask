@@ -15,7 +15,6 @@ const Project = () => {
   const [openCreateModal, setOpenCreateModal] = useState(false)
   const [openCollaboratorsModal, setOpenCollaboratorsModal] = useState(false);
   const {user} = useAuthStore();
-  console.log(user);
   
   const handleCreateTaskButton = () => {
     setOpenCreateModal(true)

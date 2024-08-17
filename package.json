@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "deploy": "vite build && vercel deploy --prod"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.6.0",
@@ -27,11 +28,13 @@
     "react-router": "^6.26.0",
     "react-router-dom": "^6.26.0",
     "react-toastify": "^10.0.5",
+    "vite": "^2.9.13",
     "zustand": "^4.5.4"
   },
   "devDependencies": {
     "@eslint/js": "^9.8.0",
     "@types/autoprefixer": "^10.2.0",
+    "@types/gh-pages": "^6.1.0",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
     "@types/tailwindcss": "^3.1.0",
@@ -41,6 +44,7 @@
     "eslint-plugin-react": "^7.35.0",
     "eslint-plugin-react-hooks": "^5.1.0-rc.0",
     "eslint-plugin-react-refresh": "^0.4.9",
+    "gh-pages": "^6.1.1",
     "globals": "^15.9.0",
     "postcss": "^8.4.41",
     "tailwindcss": "^3.4.10",
