@@ -57,7 +57,7 @@ const TaskForm = ({
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onClose()
+    onClose();
     if (!taskText || !taskDesc || !taskDate) {
       setError("Por favor, complete todos los campos obligatorios.");
       return;
@@ -108,12 +108,17 @@ const TaskForm = ({
     setFilterText(e.target.value);
   };
 
+  const convertToLinks = (text) => {
+    const urlRegex = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|$!:,.;]*[-A-Z0-9+&@#\/%=~_|$])+/gi;
+    return text.replace(urlRegex, url => `<a href="${url}" target="_blank" style="color: blue; text-decoration: underline;">${url}</a>`);
+  };
+
   return (
     <form
       onSubmit={handleSubmit}
       autoComplete="off"
       style={{ color: darkestColor }}
-      className="flex flex-col min-w-[800px] w-full gap-2  text-[20px]"
+      className="flex flex-col min-w-[800px] w-full gap-2 text-[20px]"
     >
       {error && <p className="text-red-500">{error}</p>}
 
@@ -213,18 +218,14 @@ const TaskForm = ({
         </div>
       </div>
 
-      <div
-        className="h-[178px] w-[400px] p-4 rounded-[20px]"
-        style={{ backgroundColor: darkenedColor }}
-      >
+      <div className="flex gap-2">
+
+      <div className="h-[178px] w-[400px] p-4 rounded-[20px]" style={{ backgroundColor: darkenedColor }}>
         <p className="text-[20px] font-bold mb-6">Fecha limite</p>
         <div className="flex items-center justify-center">
           <label className="text-center" htmlFor="taskDate">
             Introducir fecha y hora{" "}
-            <FontAwesomeIcon
-              className="ml-2"
-              icon={faCalendarAlt}
-            ></FontAwesomeIcon>
+            <FontAwesomeIcon className="ml-2" icon={faCalendarAlt}></FontAwesomeIcon>
           </label>
         </div>
         <input
@@ -238,11 +239,20 @@ const TaskForm = ({
           className="w-full rounded-[15px] p-2 mt-2"
         />
       </div>
+      <div className="h-[180px] w-[600px] rounded-[20px] p-2" style={{ backgroundColor: darkenedColor }}>
+  <label className="text-[20px] font-bold">Vista previa</label>
+  <div
+    className="w-full h-[120px] rounded-[15px] p-2 mt-2 overflow-y-auto overflow-x-hidden"
+    style={{ backgroundColor: darkestColor, color: darkenedColor, maxWidth: '100%', wordBreak: 'break-word' }}
+    dangerouslySetInnerHTML={{ __html: convertToLinks(taskDesc) }}
+  />
+</div>
 
-      <div
-        style={{ backgroundColor: darkenedColor }}
-        className="p-4 rounded-[20px]"
-      >
+
+      </div>
+
+
+      <div style={{ backgroundColor: darkenedColor }} className="p-4 rounded-[20px]">
         <label className="text-[20px] font-bold" htmlFor="collaborators">
           Colaboradores
         </label>
@@ -283,30 +293,31 @@ const TaskForm = ({
       </div>
 
       <div className="w-full flex justify-end gap-3">
-
         <button
           style={{ backgroundColor: darkestColor, color: darkenedColor }}
-          className=" w-[140px] h-[60px] rounded-[100px] shadow-md text-[#077559] font-semibold mt-4 "
+          className="w-[140px] h-[60px] rounded-[100px] shadow-md text-[#077559] font-semibold mt-4"
           onClick={onClose}
         >
           Cerrar
         </button>
         <button
           style={{ backgroundColor: darkestColor, color: darkenedColor }}
-          className=" w-[140px] h-[60px] rounded-[100px] shadow-md text-[#077559] font-semibold mt-4"
+          className="w-[140px] h-[60px] rounded-[100px] shadow-md text-[#077559] font-semibold mt-4"
           type="submit"
         >
           Crear tarea
         </button>
       </div>
 
+
+
       <style>
         {`
-                    input::placeholder,
-                    textarea::placeholder {
-                        color: ${darkenedColor};
-                    }
-                `}
+          input::placeholder,
+          textarea::placeholder {
+            color: ${darkenedColor};
+          }
+        `}
       </style>
     </form>
   );
