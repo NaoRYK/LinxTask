@@ -1,5 +1,6 @@
-import { addDoc, collection, deleteDoc, doc, updateDoc } from "firebase/firestore";
+import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, query, updateDoc, where } from "firebase/firestore";
 import { db } from "../config/firebaseConfig";
+import firebase from "firebase/compat/app";
 
 
 export const createTask = async (projectId, taskData) => {
@@ -56,5 +57,61 @@ export const updateTask = async (projectId, taskId, updatedTaskData) => {
     await updateDoc(taskRef, updatedTaskData);
   } catch (error) {
     console.error('Error al actualizar la tarea:', error);
+  }
+};
+
+
+export const updateTaskStatus = async (taskId, projectId, statuses) => {
+  // Asegúrate de que 'statuses' es un array
+  const statusArray = Array.isArray(statuses) ? statuses : [statuses];
+
+  // Actualiza la tarea en Firestore
+  const taskRef = doc(db, 'projects', projectId, 'tasks', taskId);
+
+  try {
+    await updateDoc(taskRef, { status: statusArray });
+    console.log("Estado de la tarea actualizado exitosamente");
+  } catch (error) {
+    console.error("Error al actualizar el estado de la tarea:", error);
+  }
+};
+
+// Obtener una tarea por su ID
+export const getTaskById = async (taskId, projectId) => {
+  try {
+    // Referencia al documento de la tarea en la subcolección 'tasks' del proyecto
+    const taskRef = doc(db, 'projects', projectId, 'tasks', taskId);
+
+    // Obtener el documento
+    const taskDoc = await getDoc(taskRef);
+
+    if (taskDoc.exists()) {
+      return { id: taskDoc.id, ...taskDoc.data() }; // Retorna los datos de la tarea
+    } else {
+      console.error('La tarea no existe.');
+      return null;
+    }
+  } catch (error) {
+    console.error('Error al obtener la tarea:', error);
+    throw error;
+  }
+};
+// taskService.js
+export const getTasksByProjectId = async (projectId) => {
+  try {
+    // Referencia a la colección de tareas dentro del proyecto
+    const tasksCollectionRef = collection(db, 'projects', projectId, 'tasks');
+    
+    // Consulta para obtener las tareas del proyecto
+    const q = query(tasksCollectionRef, where('projectId', '==', projectId));
+    
+    // Obtener los documentos
+    const querySnapshot = await getDocs(q);
+
+    // Mapear los documentos a objetos
+    return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+  } catch (error) {
+    console.error('Error al obtener las tareas:', error);
+    throw error;
   }
 };

@@ -18,6 +18,8 @@ export default {
         'primaryDark': '#000000',
         'secondaryDark': '#141414',
         'tertiaryDark': '#242424',
+        'custom-checked': '#09926C',
+        'custom-background': '#71E4B9',
       },
       fontFamily: {
         'kulimPark': ['Kulim Park', 'sans-serif'],

@@ -2,32 +2,41 @@ import { faClock } from '@fortawesome/free-regular-svg-icons';
 import { faCaretRight, faEllipsisV, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { useState } from 'react';
-import { deleteTask } from '../../services/taskService';
+import { deleteTask, getTaskById } from '../../services/taskService';
 import useAuthStore from '../../stores/userStore';
 import TaskInfoModal from '../Task/TaskInfoModal';
 import TaskSettingsModal from '../Task/TaskSettingsModal';
-import TaskEditModal from '../Task/TaskEditModal'; // Asegúrate de importar el TaskEditModal
+import TaskEditModal from '../Task/TaskEditModal';
 
-const TaskCard = ({ task, statuses, onDeleteTask, refetchProject }) => {
+const TaskCard = ({ task, statuses, onDeleteTask, refetchProject,onUpdateTask }) => {
     const backgroundColor = task.taskColor || '#FFED88';
     const darkerColor = darkenColor(backgroundColor, 0.2);
     const darkestColor = darkenColor(backgroundColor, 0.4);
     const [openCardModal, setOpenCardModal] = useState(false);
     const [openCardSettingsModal, setOpenCardSettingsModal] = useState(false);
-    const [openTaskEditModal, setOpenTaskEditModal] = useState(false); // Estado para el modal de edición
+    const [openTaskEditModal, setOpenTaskEditModal] = useState(false);
     const { user } = useAuthStore();
 
     const handleOpenCardModal = (e) => {
         if (e.target.classList.contains('taskCard')) {
-          setOpenCardModal(true);
+            setOpenCardModal(true);
         }
     };
+    const handleUpdateTask = async () => {
+        try {
+            const updatedTask = await getTaskById(task.id, task.projectId);
+            onUpdateTask(updatedTask); // Asegúrate de que esta función actualiza el estado de la tarea en el componente principal
+        } catch (error) {
+            console.error('Error al obtener la tarea actualizada:', error);
+        }
+    };
+    
 
     const handleToggleCardSettingsModal = (e) => {
         e.preventDefault();
-        e.stopPropagation(); // Detiene la propagación del clic
-        if (e.target.closest('.taskCard button') || e.target.classList.contains('taskCard')) { // Verifica si el clic se originó en el botón de tres puntos
-          setOpenCardSettingsModal(!openCardSettingsModal);
+        e.stopPropagation();
+        if (e.target.closest('.taskCard button') || e.target.classList.contains('taskCard')) {
+            setOpenCardSettingsModal(!openCardSettingsModal);
         }
     };
 
@@ -47,9 +56,13 @@ const TaskCard = ({ task, statuses, onDeleteTask, refetchProject }) => {
         setOpenTaskEditModal(false);
     };
 
-    const handleDeleteCard = () => {
-        deleteTask(task.projectId, task.id);
-        onDeleteTask(task.id);
+    const handleDeleteCard = async () => {
+        try {
+            await deleteTask(task.projectId, task.id);
+            onDeleteTask(task.id);
+        } catch (error) {
+            console.error('Error al eliminar la tarea:', error);
+        }
     };
 
     const parseDueDate = (dueDate) => {
@@ -88,10 +101,10 @@ const TaskCard = ({ task, statuses, onDeleteTask, refetchProject }) => {
             </button>}
             <div className='flex taskCard items-center gap-3'>
                 <FontAwesomeIcon style={{ color: darkestColor }} icon={faCaretRight} />
-                <h3 className='text-[24px] taskCard font-semibold' style={{ color: darkestColor }}>{task.name}</h3>
+                <h3 className='text-[24px] taskCard font-semibold overflow-hidden text-ellipsis whitespace-nowrap' style={{ color: darkestColor }}>{task.name}</h3>
             </div>
             <div className='taskCard'>
-                <p className='text-primaryDark/70 taskCard max-w-[336px] max-h-[142px] overflow-hidden text-ellipsis break-words'>{task.description}</p>
+                <p className='text-primaryDark/70 taskCard max-w-[336px] max-h-[122px] overflow-hidden text-ellipsis break-words'>{task.description}</p>
             </div>
             <div className='grid taskCard items-center grid-cols-[40px,90px,1fr] gap-3'>
                 <button onClick={handleToggleCardSettingsModal} className='w-[30px] h-[30px] rounded-full flex items-center justify-center' style={{ backgroundColor: darkerColor }}>
@@ -99,11 +112,13 @@ const TaskCard = ({ task, statuses, onDeleteTask, refetchProject }) => {
                 </button>
                 {openCardSettingsModal && (
                     <TaskSettingsModal
-                    refetchProject={refetchProject}
+                        refetchProject={refetchProject}
                         task={task}
                         onClose={handleCloseCardSettingsModal}
                         statuses={statuses}
-                        onOpenEditModal={handleOpenTaskEditModal} // Pasar la función para abrir el modal de edición
+                        onOpenEditModal={handleOpenTaskEditModal}
+                    onUpdateTask={handleUpdateTask}
+
                     />
                 )}
                 <div className='flex taskCard items-center gap-1'>
@@ -111,30 +126,29 @@ const TaskCard = ({ task, statuses, onDeleteTask, refetchProject }) => {
                     <p className='font-semibold text-[10px]'>{formattedDueDate}</p>
                 </div>
                 <div className='flex taskCard  justify-end  w-full  gap-[0.2rem]'>
-
                     <div className='w-full  flex flex-wrap gap-2 flex-col-reverse items-end  h-[70px]'>
-                    {task.priority && (
-                        <p
-                            className='p-1 taskCard rounded-[10px] w-[100px] text-center h-[30px] text-[15px] font-semibold text-white overflow-hidden text-ellipsis'
-                            style={{ backgroundColor: darkerColor }}
-                        >
-                            Prioritaria
-                        </p>
-                    )}
-                    {task.status.map((status, index) => (
-                        <p
-                            key={index}
-                            className='p-1 taskCard rounded-[10px] w-[100px] text-center h-[30px] text-[15px] font-semibold text-white overflow-hidden text-ellipsis'
-                            style={{ backgroundColor: getStatusColor(status) }}
-                        >
-                            {status.charAt(0).toUpperCase() + status.slice(1)}
-                        </p>
-                    ))}
-                    {isOverdue && (
-                        <p className='p-1 taskCard rounded-[10px] w-[100px] text-center h-[30px] text-[15px] font-semibold text-white overflow-hidden text-ellipsis bg-red-500'>
-                            Atrasada
-                        </p>
-                    )}
+                        {task.priority && (
+                            <p
+                                className='p-1 taskCard rounded-[10px] w-[100px] text-center h-[30px] text-[15px] font-semibold text-white overflow-hidden text-ellipsis'
+                                style={{ backgroundColor: darkerColor }}
+                            >
+                                Prioritaria
+                            </p>
+                        )}
+                        {task.status.map((status, index) => (
+                            <p
+                                key={index}
+                                className='p-1 taskCard rounded-[10px] w-[100px] text-center h-[30px] text-[15px] font-semibold text-white overflow-hidden text-ellipsis'
+                                style={{ backgroundColor: getStatusColor(status) }}
+                            >
+                                {status.charAt(0).toUpperCase() + status.slice(1)}
+                            </p>
+                        ))}
+                        {isOverdue && (
+                            <p className='p-1 taskCard rounded-[10px] w-[100px] text-center h-[30px] text-[15px] font-semibold text-white overflow-hidden text-ellipsis bg-red-500'>
+                                Atrasada
+                            </p>
+                        )}
                     </div>
                 </div>
             </div>

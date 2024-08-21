@@ -1,0 +1,27 @@
+/* customRadio.css */
+.radio-input {
+    appearance: none; /* Oculta el radio button predeterminado */
+    -webkit-appearance: none; /* Oculta el radio button en Safari */
+    border: 2px solid #09926C; /* Color del borde */
+    width: 20px; /* Tamaño del radio button */
+    height: 20px;
+    border-radius: 4px; /* Bordes cuadrados */
+    background-color: #71E4B9; /* Color de fondo cuando no está seleccionado */
+    position: relative;
+    cursor: pointer;
+  }
+  
+  .radio-input:checked {
+    background-color: #09926C; /* Color de fondo cuando está seleccionado */
+  }
+  
+  .radio-input:checked::after {
+    content: '✔'; /* Checkmark */
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    color: white; /* Color del checkmark */
+    font-size: 16px; /* Tamaño del checkmark */
+  }
+  

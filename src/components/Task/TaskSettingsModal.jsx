@@ -1,9 +1,15 @@
 import React, { useRef, useEffect, useState } from 'react';
 import TaskEditModal from '../Task/TaskEditModal'; // Asegúrate de que la ruta de importación sea correcta
+import { updateTaskPriority } from '../../services/taskService';
+import ChangePriorityModal from './ChangePriorityModal';
 
-const TaskSettingsModal = ({ task, onClose, statuses , refetchProject}) => {
+import ManageStatusesModal from './ManageStatusesModal';
+
+const TaskSettingsModal = ({ task, onClose, statuses , refetchProject,onUpdateTask}) => {
     const modalRef = useRef(null);
     const [openEditTaskModal, setOpenEditTaskModal] = useState(false); // Estado para el modal de edición
+    const [openPriorityModal, setOpenPriorityModal] = useState(false);
+    const [openManageStatusesModal, setOpenManageStatusesModal] = useState(false);
 
     const handleOpenEditTaskModal = (e) => {
         e.preventDefault();
@@ -14,7 +20,28 @@ const TaskSettingsModal = ({ task, onClose, statuses , refetchProject}) => {
     const handleCloseEditTaskModal = () => {
         setOpenEditTaskModal(false); // Cierra el modal de edición
     };
-
+    const handleSavePriority = async (isPriority) => {
+        await updateTaskPriority(task.projectId, task.id, isPriority);
+        refetchProject(); // Refetch project to update the UI
+    };
+    const handleOpenPriorityModal = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setOpenPriorityModal(true);
+    };
+    const handleClosePriorityModal = () => {
+        setOpenPriorityModal(false);
+    };
+    const handleOpenManageStatusesModal = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setOpenManageStatusesModal(true);
+    };
+    
+    const handleCloseManageStatusesModal = () => {
+        setOpenManageStatusesModal(false);
+    };
+    
     // Función para aclarar el color
     const lightenColor = (hex, percent) => {
         let r = parseInt(hex.slice(1, 3), 16);
@@ -60,40 +87,61 @@ const TaskSettingsModal = ({ task, onClose, statuses , refetchProject}) => {
 
     return (
         <div
-            ref={modalRef}
-            className='w-[140px] absolute top-56 h-[160px] z-20 p-1 gap-2 text-[14px] rounded-[15px] shadow-md font-bold flex items-center flex-col justify-center'
-            style={{ backgroundColor: lighterColor }}
+        ref={modalRef}
+        className='w-[140px] absolute top-56 h-[160px] z-20 p-1 gap-2 text-[14px] rounded-[15px] shadow-md font-bold flex items-center flex-col justify-center'
+        style={{ backgroundColor: lightenColor(baseColor, 0.2) }}
+    >
+        <button
+            className='rounded-[15px] shadow-md w-[120px] h-[40px] hover:scale-105 transition-all'
+            style={{ backgroundColor: baseColor, color: darkerColor }}
+            onClick={handleOpenPriorityModal}
         >
-            <button
-                className='rounded-[15px] shadow-md w-[120px] h-[40px] hover:scale-105 transition-all'
-                style={{ backgroundColor: baseColor, color: darkerColor }}
-                // Cambiar prioridad
-            >
-                Cambiar prioridad
-            </button>
-            <button
-                className='rounded-[15px] shadow-md w-[120px] h-[40px] hover:scale-105 transition-all'
-                style={{ backgroundColor: baseColor, color: darkerColor }}
-                // Cambiar estado
-            >
-                Cambiar estado
-            </button>
-            <button
-                className='rounded-[15px] shadow-md w-[120px] h-[40px] hover:scale-105 transition-all'
-                style={{ backgroundColor: baseColor, color: darkerColor }}
-                onClick={handleOpenEditTaskModal} 
-            >
-                Editar tarea
-            </button>
-            {openEditTaskModal && (
-                <TaskEditModal
-                    task={task}
-                    onClose={handleCloseEditTaskModal}
-                    statuses={statuses}
-                    refetchProject = {refetchProject}
-                />
-            )}
-        </div>
+            Cambiar prioridad
+        </button>
+        <button
+    className='rounded-[15px] shadow-md w-[120px] h-[40px] hover:scale-105 transition-all'
+    style={{ backgroundColor: baseColor, color: darkerColor }}
+    onClick={handleOpenManageStatusesModal}
+    
+>
+    Cambiar estado
+</button>
+
+        <button
+            className='rounded-[15px] shadow-md w-[120px] h-[40px] hover:scale-105 transition-all'
+            style={{ backgroundColor: baseColor, color: darkerColor }}
+            onClick={handleOpenEditTaskModal}
+        >
+            Editar tarea
+        </button>
+        {openEditTaskModal && (
+            <TaskEditModal
+                task={task}
+                onClose={handleCloseEditTaskModal}
+                statuses={statuses}
+                refetchProject={refetchProject}
+            />
+        )}
+        {openPriorityModal && (
+            <ChangePriorityModal
+                task={task}
+                onClose={handleClosePriorityModal}
+                onSave={handleSavePriority}
+
+            />
+        )}
+        {openManageStatusesModal && (
+<ManageStatusesModal
+    task={task}
+    onClose={handleCloseManageStatusesModal}
+    projectId={task.projectId}
+    onUpdateTask={onUpdateTask} // Asegúrate de que esto esté definido
+/>
+
+
+)}
+
+    </div>
     );
 };
 

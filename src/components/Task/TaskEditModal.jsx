@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { updateTask } from '../../services/taskService'; // Importa la función para actualizar tareas
 
-const TaskEditModal = ({ task, onClose, statuses,refetchProject }) => {
+const TaskEditModal = ({ task, onClose, statuses,refetchProject, onUpdateTask }) => {
   const [taskText, setTaskText] = useState(task.name);
   const [taskDesc, setTaskDesc] = useState(task.description);
   const [taskDate, setTaskDate] = useState(task.dueDate);

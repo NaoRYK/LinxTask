@@ -44,6 +44,14 @@ const Project = () => {
       tasks: prevProject.tasks.filter((task) => task.id !== taskId),
     }));
   };
+  const onUpdateTask = (updatedTask) => {
+    setProject((prevProject) => ({
+        ...prevProject,
+        tasks: prevProject.tasks.map((task) =>
+            task.id === updatedTask.id ? updatedTask : task
+        ),
+    }));
+};
 
   const refetchProject = async () => {
     try {
@@ -59,19 +67,19 @@ const Project = () => {
   }, [projectId]);
 
   useEffect(() => {
-    const fetchStatuses = async () => {
-      try {
-        const statusList = await getTaskStatuses(projectId);
-        console.log("Estados obtenidos:", statusList); // Agrega este console.log para depuración
-        setStatuses(statusList);
-      } catch (error) {
-        console.error("Error al cargar los estados:", error);
-      }
-    };
-
-    if (projectId) {
-      fetchStatuses();
+  const fetchStatuses = async () => {
+    try {
+      const statusList = await getTaskStatuses(projectId);
+      console.log("Estados obtenidos:", statusList);
+      setStatuses(Array.isArray(statusList) ? statusList : []);
+    } catch (error) {
+      console.error("Error al cargar los estados:", error);
     }
+  };
+
+  if (projectId) {
+    fetchStatuses();
+  }
   }, [projectId]);
 
   useEffect(() => {
@@ -113,24 +121,25 @@ const Project = () => {
         createTask={handleCreateTaskButton}
       >
         <div className='p-8 flex flex-wrap gap-4 justify-center overflow-y-auto'>
-          {project.tasks && project.tasks.length > 0 ? (
-            project.tasks.filter((task) => {
-              if (task && task.assignedTo && task.creatorId) {
-                return task.assignedTo.includes(user.uid) || task.creatorId === user.uid;
-              }
-              return false;
-            }).map((task) => (
-              <TaskCard
-                refetchProject={refetchProject}
-                onDeleteTask={onDeleteTask}
-                statuses={statuses}
-                task={task}
-                key={task.id}
-              />
-            ))
-          ) : (
-            <p>Todavía no hay ninguna tarea creada...</p>
-          )}
+        {project.tasks && Array.isArray(project.tasks) && project.tasks.length > 0 ? (
+    project.tasks.filter((task) => {
+      if (task && task.assignedTo && task.creatorId) {
+        return task.assignedTo.includes(user.uid) || task.creatorId === user.uid;
+      }
+      return false;
+    }).map((task) => (
+      <TaskCard
+        refetchProject={refetchProject}
+        onDeleteTask={onDeleteTask}
+        statuses={statuses}
+        task={task}
+        key={task.id}
+        onUpdateTask ={onUpdateTask}
+      />
+    ))
+  ) : (
+    <p>Todavía no hay ninguna tarea creada...</p>
+  )}
         </div>
       </ProjectContainer>
 

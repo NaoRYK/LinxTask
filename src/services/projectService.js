@@ -17,15 +17,12 @@ export const createProject = async (user, projectName, collaborators = null, col
       color: color || '#bd5555', // Valor predeterminado
       createdAt: new Date(),
     });
-    console.log("Proyecto agregado");
-
-
+    console.log("Proyecto agregado con ID:", projectRef.id);
 
     // Crear los estados iniciales
     const initialStatuses = [
       { name: 'pendiente', color: '#808080' }, // Gris
       { name: 'completada', color: '#008000' }, // Verde
-      { name: 'atrasada', color: '#FF0000' },  // Rojo
     ];
 
     for (const status of initialStatuses) {
@@ -49,7 +46,6 @@ export const createProject = async (user, projectName, collaborators = null, col
     throw error; // Lanza el error para que el componente que llama pueda manejarlo
   }
 };
-
 export const deleteProject = async (projectId) => {
   try {
     await deleteDoc(doc(db, 'projects', projectId));
