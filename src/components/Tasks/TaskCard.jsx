@@ -16,11 +16,12 @@ const TaskCard = ({ task, statuses, onDeleteTask, refetchProject }) => {
     const [openCardSettingsModal, setOpenCardSettingsModal] = useState(false);
     const [openTaskEditModal, setOpenTaskEditModal] = useState(false); // Estado para el modal de edición
     const { user } = useAuthStore();
+
     const handleOpenCardModal = (e) => {
         if (e.target.classList.contains('taskCard')) {
           setOpenCardModal(true);
         }
-      };
+    };
 
     const handleToggleCardSettingsModal = (e) => {
         e.preventDefault();
@@ -28,7 +29,7 @@ const TaskCard = ({ task, statuses, onDeleteTask, refetchProject }) => {
         if (e.target.closest('.taskCard button') || e.target.classList.contains('taskCard')) { // Verifica si el clic se originó en el botón de tres puntos
           setOpenCardSettingsModal(!openCardSettingsModal);
         }
-      };
+    };
 
     const handleOpenTaskEditModal = () => {
         setOpenTaskEditModal(true);
@@ -68,18 +69,20 @@ const TaskCard = ({ task, statuses, onDeleteTask, refetchProject }) => {
         day: '2-digit'
     });
 
+    const isOverdue = dueDateTimestamp < new Date();
+
     const getStatusColor = (status) => {
         const statusObj = statuses.find(s => s.name === status);
         return statusObj ? statusObj.color : '#6d6262';
     };
 
     return (
-        <div className='taskCard w-[410px] h-[250px] rounded-[10px] shadow-lg p-6 grid grid-rows-[25px,142px,35px] relative cursor-pointer' style={{ backgroundColor: backgroundColor }}
+        <div className='taskCard w-[410px] h-[250px] rounded-[10px] shadow-lg p-6 grid grid-rows-[25px,120px,35px] relative cursor-pointer' style={{ backgroundColor: backgroundColor }}
             onClick={handleOpenCardModal}
         >
             {task.creatorId === user.uid && <button
                 onClick={handleDeleteCard}
-                className='w-[30px] taskCard rounded-full h-[30px] text-[18px] bg-[#BC1919] text-[#761c1c] flex items-center justify-center absolute top-[-.5rem] right-[-.5rem]'
+                className='w-[30px] taskCard rounded-full h-[30px] text-[18px] bg-[#BC1919] text-[#d79c9c] flex items-center justify-center absolute top-[-.5rem] right-[-.5rem]'
             >
                 <FontAwesomeIcon icon={faTrash} />
             </button>}
@@ -107,10 +110,12 @@ const TaskCard = ({ task, statuses, onDeleteTask, refetchProject }) => {
                     <FontAwesomeIcon icon={faClock} />
                     <p className='font-semibold text-[10px]'>{formattedDueDate}</p>
                 </div>
-                <div className='flex taskCard justify-end gap-[0.2rem]'>
+                <div className='flex taskCard  justify-end  w-full  gap-[0.2rem]'>
+
+                    <div className='w-full  flex flex-wrap gap-2 flex-col-reverse items-end  h-[70px]'>
                     {task.priority && (
                         <p
-                            className='p-1 taskCard rounded-[10px] w-[110px] text-center h-[30px] text-[15px] font-semibold text-white overflow-hidden text-ellipsis'
+                            className='p-1 taskCard rounded-[10px] w-[100px] text-center h-[30px] text-[15px] font-semibold text-white overflow-hidden text-ellipsis'
                             style={{ backgroundColor: darkerColor }}
                         >
                             Prioritaria
@@ -119,12 +124,18 @@ const TaskCard = ({ task, statuses, onDeleteTask, refetchProject }) => {
                     {task.status.map((status, index) => (
                         <p
                             key={index}
-                            className='p-1 taskCard rounded-[10px] w-[110px] text-center h-[30px] text-[15px] font-semibold text-white overflow-hidden text-ellipsis'
+                            className='p-1 taskCard rounded-[10px] w-[100px] text-center h-[30px] text-[15px] font-semibold text-white overflow-hidden text-ellipsis'
                             style={{ backgroundColor: getStatusColor(status) }}
                         >
                             {status.charAt(0).toUpperCase() + status.slice(1)}
                         </p>
                     ))}
+                    {isOverdue && (
+                        <p className='p-1 taskCard rounded-[10px] w-[100px] text-center h-[30px] text-[15px] font-semibold text-white overflow-hidden text-ellipsis bg-red-500'>
+                            Atrasada
+                        </p>
+                    )}
+                    </div>
                 </div>
             </div>
             {openCardModal && <TaskInfoModal task={task} onClose={handleCloseCardModal} />}
@@ -133,7 +144,7 @@ const TaskCard = ({ task, statuses, onDeleteTask, refetchProject }) => {
                     task={task}
                     onClose={handleCloseTaskEditModal}
                     statuses={statuses}
-                    refetchProject = {refetchProject}
+                    refetchProject={refetchProject}
                 />
             )}
         </div>

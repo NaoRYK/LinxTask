@@ -15,7 +15,12 @@ const TaskInfoModal = ({ task, onClose }) => {
         return statusObj ? statusObj.color : '#6d6262';
     };
 
-    // Maneja el clic fuera del modal
+    // Verificar si la tarea está atrasada
+    const isOverdue = () => {
+        const dueDateTimestamp = parseDate(task.dueDate);
+        return dueDateTimestamp < new Date();
+    };
+
     const handleClickOutside = (event) => {
         if (modalRef.current && !modalRef.current.contains(event.target)) {
             onClose();
@@ -82,17 +87,17 @@ const TaskInfoModal = ({ task, onClose }) => {
     });
 
     return (
-        <div className="fixed inset-0  flex  items-center justify-center z-50 cursor-default" style={{ backdropFilter: 'blur(5px)' }}>
+        <div className="fixed inset-0 flex items-center justify-center z-50 cursor-default" style={{ backdropFilter: 'blur(5px)' }}>
             <div
                 className="bg-white p-6 rounded-lg shadow-lg w-[1000px] grid grid-rows-[60px,100px,1fr,60px] h-[755px] relative"
                 ref={modalRef}
                 style={{ backgroundColor: task.taskColor }}
             >
                 <button
-                                        onClick={(e) => {
-                                            e.stopPropagation(); // Esto evita que el evento se propague a elementos padres
-                                            onClose();
-                                        }}
+                    onClick={(e) => {
+                        e.stopPropagation(); // Esto evita que el evento se propague a elementos padres
+                        onClose();
+                    }}
                     className="absolute top-4 right-4 text-primaryDark hover:text-gray-800"
                 >
                     <FontAwesomeIcon icon={faTimes} size="lg" />
@@ -112,25 +117,33 @@ const TaskInfoModal = ({ task, onClose }) => {
                             </>
                         )}
                     </div>
-                   <div className='flex gap-2 flex-wrap'>
-                   {task.priority && <p
-                            className='p-1 rounded-[10px] bg-red-600 w-[110px] text-center h-[30px] text-[15px] font-semibold text-white overflow-hidden text-ellipsis'
-                        >Prioritaria</p>}
-                    {task.status && task.status.map((status, index) => (
-                        <p
-                            key={index}
-                            className='p-1 rounded-[10px] w-[110px] text-center h-[30px] text-[15px] font-semibold text-white overflow-hidden text-ellipsis'
-                            style={{ backgroundColor: getStatusColor(status) }}
-                        >
-                            {status.charAt(0).toUpperCase() + status.slice(1)}
-                        </p>
-                    ))}
-                   </div>
-                    
+                    <div className='flex gap-2 flex-wrap'>
+                        {task.priority && (
+                            <p
+                                className='p-1 rounded-[10px] bg-red-600 w-[110px] text-center h-[30px] text-[15px] font-semibold text-white overflow-hidden text-ellipsis'
+                            >
+                                Prioritaria
+                            </p>
+                        )}
+                        {task.status && task.status.map((status, index) => (
+                            <p
+                                key={index}
+                                className='p-1 rounded-[10px] w-[110px] text-center h-[30px] text-[15px] font-semibold text-white overflow-hidden text-ellipsis'
+                                style={{ backgroundColor: getStatusColor(status) }}
+                            >
+                                {status.charAt(0).toUpperCase() + status.slice(1)}
+                            </p>
+                        ))}
+                        {/* Mostrar etiqueta de "Atrasada" si la tarea está atrasada */}
+                        {isOverdue() && (
+                            <p className='p-1 rounded-[10px] w-[110px] text-center h-[30px] text-[15px] font-semibold text-white overflow-hidden text-ellipsis bg-red-500'>
+                                Atrasada
+                            </p>
+                        )}
+                    </div>
                 </div>
-                <div  className='rounded-[20px] p-2' style={{backgroundColor:darkColor}}>
-
-                <p className="text-primaryDark/80">{task.description}</p>
+                <div className='rounded-[20px] p-2' style={{backgroundColor: darkColor}}>
+                    <p className="text-primaryDark/80">{task.description}</p>
                 </div>
 
                 <div className="font-bold flex items-center justify-between" style={{color: darkerColor}}>

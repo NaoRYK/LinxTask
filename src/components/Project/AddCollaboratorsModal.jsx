@@ -87,10 +87,9 @@ const AddCollaboratorsModal = ({ projectId, onClose, onCollaboratorsUpdated }) =
       >
         {showModal && (
           <div className={`bg-white rounded shadow-md p-4 w-1/2`}>
-            <h2 className={`text-lg font-bold mb-4`}>Colaboradores</h2>
+            <h2 className={`text-lg font-bold mb-4`}>Editar colaboradores</h2>
             <form className={`flex flex-wrap justify-center flex-col`}>
               <div className={`overflow-y-auto h-64 flex flex-col`}>
-                <h3 className={`text-md font-bold mb-2`}>Añadir Colaboradores</h3>
                 {filteredUsers.map((user) => (
                   <div key={user.id} className={`flex items-center mb-2`}>
                     <label className={`flex items-center`}>
