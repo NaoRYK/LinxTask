@@ -32,7 +32,7 @@ const PinnedProject = ({ project, onUnpinProject,onDelete }) => {
 
         <div className="flex w-full justify-between">
           <div className="flex gap-2 text-tertiaryDark">
-           {project.creatorId === user.uid &&  <button className="hover:bg-outlineGrey p-1 rounded-lg transition-all"
+           {project.creatorId === user.uid &&  <button className="hover:bg-outlineGrey/50 p-1 rounded-lg transition-all"
             onClick={handleDeleteClick}
             >
               <img
@@ -42,7 +42,7 @@ const PinnedProject = ({ project, onUnpinProject,onDelete }) => {
               />
             </button>}
             <button
-              className="hover:bg-outlineGrey p-1 rounded-lg transition-all"
+              className="hover:bg-outlineGrey/50 p-1 rounded-lg transition-all"
               onClick={(e) => {
                 e.preventDefault()
                 e.stopPropagation(); // Evita que el click se propague al Link

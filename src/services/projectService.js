@@ -1,4 +1,4 @@
-import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, getFirestore, query,  updateDoc, where } from "firebase/firestore";
+import { addDoc, arrayRemove, collection, deleteDoc, doc, getDoc, getDocs, getFirestore, query,  updateDoc, where } from "firebase/firestore";
 import app from "../config/firebaseConfig";
 import useProjectStore from "../stores/projectStore";
 
@@ -272,4 +272,22 @@ export const addCollaboratorsToProject = async (projectId, newCollaborators) => 
   } catch (error) {
     console.error("Error al añadir colaboradores:", error);
   }
+};
+export const updateProject = async (projectId, updatedData) => {
+  try {
+    const projectRef = doc(db, 'projects', projectId);
+
+    await updateDoc(projectRef, updatedData);
+
+    console.log('Proyecto actualizado correctamente');
+  } catch (error) {
+    console.error('Error al actualizar el proyecto:', error);
+  }
+};
+
+export const removeCollaboratorFromProject = async (projectId, userId) => {
+  const projectRef = doc(db, 'projects', projectId);
+  await updateDoc(projectRef, {
+    collaborators: arrayRemove(userId),
+  });
 };

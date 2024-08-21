@@ -19,6 +19,9 @@ const Project = () => {
   const handleCreateTaskButton = () => {
     setOpenCreateModal(true);
   };
+  const handleCollaboratorsUpdated = () => {
+    refetchProject(); // Refetch para actualizar los colaboradores
+  };
 
   const handleAddCollaboratorsButton = () => {
     if (project.creatorId === user.uid) {
@@ -133,6 +136,7 @@ const Project = () => {
 
       {openCollaboratorsModal && (
         <AddCollaboratorsModal
+        onCollaboratorsUpdated = {handleCollaboratorsUpdated}
           projectId={projectId}
           onClose={() => setOpenCollaboratorsModal(false)}
         />

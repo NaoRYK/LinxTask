@@ -6,7 +6,7 @@ import useProjectStore from "../stores/projectStore";
 import ProjectCard from "../components/ProjectCard/ProjectCard";
 import Skeleton from "../components/Skeleton/Skeleton";
 import createProjectIcon from '../assets/icons/create-project.png';
-import { createProject, getAllUserProjectsWithTasks, deleteProject } from "../services/projectService";
+import { createProject, getAllUserProjectsWithTasks, deleteProject, updateProject } from "../services/projectService";
 import CreateProjectModal from "../components/Project/CreateProjectModal";
 
 const Home = () => {
@@ -55,6 +55,36 @@ const Home = () => {
     }
   };
 
+  const handleEditProject = async (updatedProject) => {
+    try {
+      await updateProject(updatedProject.id, {
+        name: updatedProject.name,
+        color: updatedProject.color,
+        collaborators: updatedProject.collaborators
+      });
+  
+      // Actualiza el estado local con el proyecto actualizado
+      const updatedProjects = storeProjects.map(project =>
+        project.id === updatedProject.id ? updatedProject : project
+      );
+      setProjects(updatedProjects);
+  
+      // Actualiza los proyectos fijados si el proyecto editado está fijado
+      const updatedPinnedProjects = pinnedProjects.map(project =>
+        project.id === updatedProject.id ? updatedProject : project
+      );
+      setPinnedProjects(updatedPinnedProjects);
+  
+      // Guarda los proyectos fijados en el local storage
+      localStorage.setItem('pinnedProjects', JSON.stringify(updatedPinnedProjects));
+  
+      console.log('Proyecto editado correctamente');
+    } catch (error) {
+      console.error('Error al editar el proyecto:', error);
+    }
+  };
+  
+  
   const handleDeleteProject = async (projectId) => {
     try {
       console.log("ID del proyecto para borrar:", projectId, "Tipo:", typeof projectId);
@@ -134,6 +164,7 @@ const Home = () => {
                   <ProjectCard 
                     key={project.id} 
                     project={project} 
+                    onEditProject={handleEditProject}
                     onTogglePin={togglePinProject}
                     isPinned={pinnedProjects.some(p => p.id === project.id)} // Pasar el estado de fijado
                     onDelete={handleDeleteProject} // Añadir la función para eliminar el proyecto
