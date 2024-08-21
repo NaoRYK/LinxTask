@@ -87,20 +87,26 @@ const TaskInfoModal = ({ task, onClose }) => {
         day: '2-digit'
     });
 
-    // Función para detectar enlaces en el texto y convertirlos en elementos <a>
     const renderDescriptionWithLinks = (description) => {
-        const urlPattern = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|$!:,.;]*[-A-Z0-9+&@#\/%?=~_|$])/gi;
-        return description.split(urlPattern).map((part, index) =>
-            urlPattern.test(part) ? (
-                <a key={index} href={part} target="_blank" rel="noopener noreferrer" style={{color:lighterColor}} className=" hover:underline">
-                    {part}
+        const urlPattern = /\b(https?:\/\/[^\s]+)/gi;
+        return description.split(urlPattern).map((part, index) => {
+          const isUrl = urlPattern.test(part) && part.startsWith('http');
+          if (isUrl) {
+            try {
+              const url = new URL(part);
+              return (
+                <a key={index} href={url.href} target="_blank" rel="noopener noreferrer" style={{ color: lighterColor }} className="hover:underline">
+                  {part}
                 </a>
-            ) : (
-                part
-            )
-        );
-    };
-
+              );
+            } catch (e) {
+              return part;
+            }
+          } else {
+            return part;
+          }
+        });
+      };
     return (
         <div className="fixed inset-0 flex items-center justify-center z-50 cursor-default" style={{ backdropFilter: 'blur(5px)' }}>
             <div
