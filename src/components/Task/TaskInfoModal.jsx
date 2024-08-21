@@ -59,6 +59,7 @@ const TaskInfoModal = ({ task, onClose }) => {
 
     const backgroundColor = task.taskColor || '#FFED88';
     const darkerColor = darkenColor(backgroundColor, 0.4);
+    const lighterColor = darkenColor(backgroundColor, -0.4);
     const darkColor = darkenColor(backgroundColor, 0.2);
 
     // Función para convertir `createdAt` a una fecha formateada
@@ -85,6 +86,20 @@ const TaskInfoModal = ({ task, onClose }) => {
         month: '2-digit',
         day: '2-digit'
     });
+
+    // Función para detectar enlaces en el texto y convertirlos en elementos <a>
+    const renderDescriptionWithLinks = (description) => {
+        const urlPattern = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|$!:,.;]*[-A-Z0-9+&@#\/%?=~_|$])/gi;
+        return description.split(urlPattern).map((part, index) =>
+            urlPattern.test(part) ? (
+                <a key={index} href={part} target="_blank" rel="noopener noreferrer" style={{color:lighterColor}} className=" hover:underline">
+                    {part}
+                </a>
+            ) : (
+                part
+            )
+        );
+    };
 
     return (
         <div className="fixed inset-0 flex items-center justify-center z-50 cursor-default" style={{ backdropFilter: 'blur(5px)' }}>
@@ -143,7 +158,7 @@ const TaskInfoModal = ({ task, onClose }) => {
                     </div>
                 </div>
                 <div className='rounded-[20px] p-2' style={{backgroundColor: darkColor}}>
-                    <p className="text-primaryDark/80">{task.description}</p>
+                    <p className="text-primaryDark/80">{renderDescriptionWithLinks(task.description)}</p>
                 </div>
 
                 <div className="font-bold flex items-center justify-between" style={{color: darkerColor}}>

@@ -76,11 +76,15 @@ const TaskCard = ({ task, statuses, onDeleteTask, refetchProject,onUpdateTask })
     };
 
     const dueDateTimestamp = parseDueDate(task.dueDate);
-    const formattedDueDate = isNaN(dueDateTimestamp) ? 'Fecha inválida' : dueDateTimestamp.toLocaleDateString('es-ES', {
+    const formattedDueDate = isNaN(dueDateTimestamp) ? 'Fecha inválida' : dueDateTimestamp.toLocaleString('es-ES', {
         year: 'numeric',
         month: '2-digit',
-        day: '2-digit'
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
     });
+    
 
     const isOverdue = dueDateTimestamp < new Date();
 
@@ -123,7 +127,7 @@ const TaskCard = ({ task, statuses, onDeleteTask, refetchProject,onUpdateTask })
                 )}
                 <div className='flex taskCard items-center gap-1'>
                     <FontAwesomeIcon icon={faClock} />
-                    <p className='font-semibold text-[10px]'>{formattedDueDate}</p>
+                    <p className='font-semibold text-[12px]'>{formattedDueDate}</p>
                 </div>
                 <div className='flex taskCard  justify-end  w-full  gap-[0.2rem]'>
                     <div className='w-full  flex flex-wrap gap-2 flex-col-reverse items-end  h-[70px]'>

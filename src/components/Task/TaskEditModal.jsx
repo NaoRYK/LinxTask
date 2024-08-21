@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { updateTask } from '../../services/taskService'; // Importa la función para actualizar tareas
+import { faCalendarAlt, faCheck } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 const TaskEditModal = ({ task, onClose, statuses,refetchProject, onUpdateTask }) => {
   const [taskText, setTaskText] = useState(task.name);
@@ -29,6 +31,7 @@ const TaskEditModal = ({ task, onClose, statuses,refetchProject, onUpdateTask })
     }
   };
   const darkerColor =  darkenColor(task.taskColor,-0.4)
+  const lighterColor =  darkenColor(task.taskColor,0.2)
   const darkestColor =  darkenColor(task.taskColor,0.4)
   return (
     <div
@@ -38,42 +41,24 @@ const TaskEditModal = ({ task, onClose, statuses,refetchProject, onUpdateTask })
     >
       <div
        style={{backgroundColor:task.taskColor,color:darkerColor, borderColor:darkestColor}}
-      className="w-[600px] h-[700px] rounded-[20px] p-6 shadow-lg">
-        <h2 className="text-[24px] font-bold mb-4">Editar tarea</h2>
+      className="w-[957px] h-[720px] rounded-[20px] p-6">
+        <h2 style={{ color: darkestColor }} className="font-bold text-[40px]">Crear nueva tarea</h2>
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          <div className="flex flex-col">
-            <label className="font-bold mb-2">Nombre de la tarea</label>
+          <div className='flex gap-4 justify-between'>
+          <div className="w-[600px] h-[65px] rounded-[20px] flex shadow-md items-center p-4 gap-2"
+                    style={{ backgroundColor: lighterColor }}
+                    >
+            <label className="text-[20px] font-bold">Nombre de la tarea</label>
             <input
               type="text"
               value={taskText}
               onChange={(e) => setTaskText(e.target.value)}
-              className="p-2 border rounded"
-              style={{backgroundColor:darkestColor}}
+              style={{ backgroundColor: darkestColor, color: darkerColor }}
+              className="w-[355px] h-[45px] rounded-[15px] p-2"
             />
           </div>
-          <div className="flex flex-col">
-            <label className="font-bold mb-2">Descripción</label>
-            <textarea
-              value={taskDesc}
-              onChange={(e) => setTaskDesc(e.target.value)}
-              className="p-2 border rounded h-[150px]"
-              style={{backgroundColor:darkestColor}}
-
-            />
-          </div>
-          <div className="flex flex-col">
-            <label className="font-bold mb-2">Fecha límite</label>
-            <input
-              type="datetime-local"
-              value={taskDate}
-              onChange={(e) => setTaskDate(e.target.value)}
-              className="p-2 border rounded"
-              style={{backgroundColor:darkestColor}}
-
-            />
-          </div >
-            <div className='flex justify-around items-center'>
-            <div className="flex flex-col items-center">
+          <div className="flex flex-col items-center mr-20 p-2 rounded-lg " 
+          style={{backgroundColor:lighterColor}}>
             <label className="font-bold mb-2">Color de la tarea</label>
             <input
               type="color"
@@ -84,51 +69,107 @@ const TaskEditModal = ({ task, onClose, statuses,refetchProject, onUpdateTask })
 
             />
           </div>
+          </div>
+<div className='flex'>
+<div style={{ backgroundColor: lighterColor  }}
+          className="h-[150px] w-[600px] rounded-[20px] p-2">
+            <label className="text-[20px] font-bold">Descripción de la tarea</label>
+            <textarea
+              value={taskDesc}
+              onChange={(e) => setTaskDesc(e.target.value)}
+              style={{ backgroundColor: darkestColor, color: darkerColor }}
+              className="w-[524px] h-[90px] rounded-[15px] p-2 mt-2 "
+
+            />
+          </div>
+</div>
+<div className='flex w-full justify-between'>
+<div           className="h-[178px] w-[400px] p-4 rounded-[20px]"
+          style={{ backgroundColor: darkestColor }}>
+                    <p className="text-[20px] font-bold mb-6">Fecha limite</p>
+
+                    <div className="flex items-center justify-center">
+          <label className="text-center" htmlFor="taskDate">
+            Introducir fecha y hora limite
+            <FontAwesomeIcon className="ml-2" icon={faCalendarAlt}></FontAwesomeIcon>
+          </label>
+        </div>
+            <input
+            id='taskDate'
+              type="datetime-local"
+              value={taskDate}
+              onChange={(e) => setTaskDate(e.target.value)}
+              style={{ backgroundColor: lighterColor, color: darkerColor }}
+          className="w-full rounded-[15px] p-2 mt-2"
+
+            />
+          </div >
+            <div className='flex justify-around items-center'>
+
           <div className="flex flex-col items-center">
-  <label className="font-bold mb-2">Prioridad</label>
-  <div className="flex items-center">
-    <input
-      type="checkbox"
-      checked={taskPriority}
-      onChange={() => setTaskPriority(!taskPriority)}
-      className="w-4 h-4 rounded-sm border-2 border-gray-300 checked:bg-[#34C759] checked:border-[#34C759] focus:ring-0"
-      style={{backgroundColor: taskPriority ? darkestColor : 'transparent'}}
-    />
-  </div>
+  <div
+          className="rounded-[10px] p-2 flex items-center mr-96 "
+          style={{ backgroundColor: lighterColor }}
+        >
+          <label className="flex items-center flex-col gap-2 space-x-2">
+            <span className="text-[20px] font-bold">Prioritaria</span>
+
+            <span
+              className={`flex items-center justify-center w-6 h-6 rounded border-2 border-${darkestColor} 
+                            ${
+                              taskPriority
+                                ? `bg-${lighterColor} border-${darkestColor}`
+                                : `bg-transparent`
+                            }`}
+            >
+              {taskPriority && (
+                <FontAwesomeIcon icon={faCheck}></FontAwesomeIcon>
+              )}
+            </span>
+            <input
+              type="checkbox"
+              checked={taskPriority}
+              onChange={(e) => setTaskPriority(e.target.checked)}
+              className="hidden"
+            />
+          </label>
+        </div>
 </div>
             </div>
+</div>
+          
           <div className="flex flex-col">
             <label className="font-bold mb-2">Estado</label>
             <select
               value={taskStatus}
               onChange={(e) => setTaskStatus(e.target.value)}
               className="p-2 border rounded"
-              style={{backgroundColor:darkestColor}}
+              style={{backgroundColor:darkestColor,borderColor:darkerColor}}
 
             >
               {statuses.map((status) => (
-                <option key={status.name} value={status.name}>
+                <option key={status.name}  value={status.name}>
                   {status.name.charAt(0).toUpperCase() + status.name.slice(1)}
                 </option>
               ))}
             </select>
           </div>
-          <div className="flex gap-4 justify-between mt-4">
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-4 py-2 rounded-[10px] "
-              style={{backgroundColor:darkerColor,color:task.taskColor}}            >
-              Cancelar
-            </button>
-            <button
-             style={{backgroundColor:darkerColor,color:task.taskColor}}
-              type="submit"
-              className="px-4 py-2 rounded-[10px]"
-            >
-              Guardar cambios
-            </button>
-          </div>
+          <div className="w-full flex justify-end gap-3">
+        <button
+          style={{ backgroundColor: darkestColor, color: darkerColor }}
+          className="w-[140px] h-[60px] rounded-[100px] shadow-md text-[#077559] font-semibold mt-4"
+          onClick={onClose}
+        >
+          Cerrar
+        </button>
+        <button
+          style={{ backgroundColor: darkestColor, color: darkerColor }}
+          className="w-[140px] h-[60px] rounded-[100px] shadow-md text-[#077559] font-semibold mt-4"
+          type="submit"
+        >
+          Guardar cambios
+        </button>
+      </div>
         </form>
       </div>
     </div>
