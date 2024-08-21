@@ -37,10 +37,10 @@ const ProjectCard = ({ project, onTogglePin, isPinned, onDelete }) => {
 
         <div className="flex w-full justify-between">
           <div className="flex gap-2 text-tertiaryDark">
-            {project.creatorId === user.uid &&             <button onClick={handleDeleteClick} className="hover:bg-outlineGrey p-1 rounded-lg transition-all">
+            {project.creatorId === user.uid &&             <button onClick={handleDeleteClick} className="hover:bg-outlineGrey/50 hover:text-white p-1 rounded-lg transition-all">
               <img src={trashCan} className="w-[19.8px] h-[20.2px]" alt="trash-icon" />
             </button>}
-            {!isPinned && <button onClick={handlePinClick} className="hover:bg-outlineGrey p-1 rounded-lg transition-all">
+            {!isPinned && <button onClick={handlePinClick} className="hover:bg-outlineGrey/50  hover:text-white p-1 rounded-lg transition-all">
               <img src={keep} className="w-[19.8px] h-[20.2px] cursor-pointer" alt="keep-icon" />
             </button>}
           </div>
