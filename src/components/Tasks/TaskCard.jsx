@@ -25,7 +25,7 @@ const TaskCard = ({ task, statuses, onDeleteTask, refetchProject,onUpdateTask })
     const handleUpdateTask = async () => {
         try {
             const updatedTask = await getTaskById(task.id, task.projectId);
-            onUpdateTask(updatedTask); // Asegúrate de que esta función actualiza el estado de la tarea en el componente principal
+            onUpdateTask(updatedTask); 
         } catch (error) {
             console.error('Error al obtener la tarea actualizada:', error);
         }

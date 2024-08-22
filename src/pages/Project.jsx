@@ -147,6 +147,7 @@ const Project = () => {
         <AddCollaboratorsModal
         onCollaboratorsUpdated = {handleCollaboratorsUpdated}
           projectId={projectId}
+          project={project}
           onClose={() => setOpenCollaboratorsModal(false)}
         />
       )}
