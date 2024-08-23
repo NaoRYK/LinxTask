@@ -9,6 +9,7 @@ import AccedButton from "../components/Login/Buttons/AccedButton";
 import GoogleButton from "../components/Login/Buttons/GoogleButton";
 import appLogo from '../assets/icons/app-icon.png'
 import RedirectUser from "../components/Login/Buttons/RedirectUser";
+import ForgottenPasswordButton from "../components/Login/Buttons/ForgottenPasswordButton";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -65,6 +66,7 @@ const Login = () => {
       </LoginContainer>
 
     <RedirectUser isRegister={true}></RedirectUser>
+    <ForgottenPasswordButton></ForgottenPasswordButton>
 </div>
 <div className="text-[48px] font-semibold p-10 ml-14">
   <h2>Sencillo pero <span className="text-loginGreen">potente</span>.</h2>

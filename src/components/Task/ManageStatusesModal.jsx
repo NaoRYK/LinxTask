@@ -1,13 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { addCustomStatus, deleteStatus, getTaskStatuses, updateStatus } from '../../services/statusService'; // Asegúrate de que `updateStatus` esté implementado
 import { getTasksByProjectId, updateTaskStatus } from '../../services/taskService';
+import unasignIcon from '../../assets/svg/do_not_disturb_on.svg'
+import { faCircleMinus, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import colorSelectorIcon from "../../assets/icons/color-swatch.png";
 
 const ManageStatusesModal = ({ task, onClose, projectId, onUpdateTask }) => {
     const [statuses, setStatuses] = useState([]);
     const [newStatusName, setNewStatusName] = useState('');
-    const [newStatusColor, setNewStatusColor] = useState('#FFFFFF');
+    const [newStatusColor, setNewStatusColor] = useState('#71E4B9');
     const [editingStatus, setEditingStatus] = useState(null);
-
+    
     useEffect(() => {
         const fetchStatuses = async () => {
             try {
@@ -150,78 +154,85 @@ const ManageStatusesModal = ({ task, onClose, projectId, onUpdateTask }) => {
     
     return (
         <div className='fixed inset-0 flex items-center justify-center bg-opacity-50 bg-gray-700'>
-            <div className='bg-white p-6 rounded shadow-lg w-[500px]'>
-                <h2 className='text-xl font-bold mb-4'>Gestionar Estados</h2>
+            <div className='bg-[#D2F9E6] p-6 rounded-[28px] shadow-lg w-[400px] h-[400px]'>
+                <h2 className='text-[24px] mb-4'>Gestionar Estados</h2>
                 
-                <div className='mb-4'>
-                    <input
-                        type='text'
-                        value={newStatusName}
-                        onChange={(e) => setNewStatusName(e.target.value)}
-                        placeholder='Nombre del estado'
-                        className='border p-2 w-full'
-                    />
-                    <input
-                        type='color'
-                        value={newStatusColor}
-                        onChange={(e) => setNewStatusColor(e.target.value)}
-                        className='mt-2'
-                    />
-                    <button
-                        onClick={handleAddStatus}
-                        className='bg-blue-500 text-white p-2 mt-2 rounded'
-                    >
-                        Añadir Estado
-                    </button>
-                </div>
 
-                <div>
+
+                <div className='mb-4'>
                     {statuses.map((status, index) => (
-                        <div key={index} className='flex gap-1 items-center mb-2'>
+                        <div key={index} className='grid grid-cols-[15%,40%,1fr] gap-1 items-center border-b-2  border-[#71E4B9] p-2'>
                             <div
-                                className='w-4 h-4 mr-2'
+                                className='w-[40px] h-[40px] rounded-full  '
                                 style={{ backgroundColor: status.color }}
                             />
-                            <span className='mr-2'>{capitalizeFirstLetter(status.name)}</span>
+                            <span className='mr-2 text-[16px]'>{capitalizeFirstLetter(status.name)}</span>
                             {status.name !== 'completada' && status.name !== 'pendiente' && (
                                 <>
                                 {/* TODO */}
                                    {false === true &&  <button
                                         onClick={() => setEditingStatus(status)}
-                                        className='bg-yellow-500 text-white px-2 py-1 rounded mr-2'
+                                        className='bg-yellow-500 text-[#084C3C] px-2 py-1 rounded mr-2'
                                     >
                                         Editar
                                     </button>}
 
                                 </>
                             )}
+                            <div className='flex flex-row-reverse gap-2'>
                             { !task.status.includes(status.name) && (
                                 <button
                                     onClick={() => handleAssignStatus(status.id)}
-                                    className='bg-green-500 text-white px-2 py-1 rounded ml-2'
+                                    className='bg-[#71E4B9] rounded-[10px] w-[70px] h-[30px] text-[12px] text-primaryDark/60 px-2 py-1 '
                                 >
                                     Asignar
                                 </button>
                             )}
-                            {(status.name !== 'completada' && status.name !== 'pendiente') && (
+                            {(status.name !== 'completada' && status.name !== 'pendiente')  && (task.status.includes(status.name)) && (
                                 <button
                                     onClick={() => handleRemoveStatus(status.name)}
-                                    className='bg-red-500 text-white px-2 py-1 rounded ml-2'
+                                    className='bg-[#17CF97] w-[30px] flex items-center justify-center  rounded-full h-[30px]  text-primaryDark/60 px-2 py-1  '
                                 >
-                                    Quitar Estado
+                                    <FontAwesomeIcon icon={faCircleMinus}></FontAwesomeIcon>
                                 </button>
                                 
                             )}
                             {status.name !== 'completada' && status.name !== 'pendiente' && <button
                                         onClick={() => handleDeleteStatus(status.id)}
-                                        className='bg-red-500 text-white py-1 rounded'
+                                        className='bg-[#17CF97] w-[30px] flex items-center justify-center  rounded-full h-[30px]  text-primaryDark/60 py-1 '
                                     >
-                                        Borrar estado
+                                    <FontAwesomeIcon icon={faTrash}></FontAwesomeIcon>
                                     </button> }
+                            </div>
                         </div>
                     ))}
                 </div>
+                <div className='mb-4 flex gap-4'>
+                    <input
+                        type='text'
+                        value={newStatusName}
+                        onChange={(e) => setNewStatusName(e.target.value)}
+                        placeholder='Nombre del estado'
+                        className='border p-2 w-[220px] rounded-[10px] h-[40px] bg-[#A9F1D2] text-[10px]'
+                    />
+          <div
+          style={{backgroundColor:newStatusColor}}
+          className="relative flex items-center justify-center w-[40px] h-[40px] rounded-full bg-[#71E4B9] shadow-md">
+            <input
+              id="statusColor"
+              value={newStatusColor}
+              onChange={(e) => setNewStatusColor(e.target.value)}
+              type="color"
+              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+            />
+            <img
+              src={colorSelectorIcon}
+              alt="Selector de color"
+              className="w-6 h-6 cursor-pointer"
+            />
+          </div>
 
+                </div>
                 {editingStatus && (
                     <div className='mt-4'>
                         <h3 className='text-lg font-bold'>Editar Estado</h3>
@@ -243,19 +254,29 @@ const ManageStatusesModal = ({ task, onClose, projectId, onUpdateTask }) => {
                         />
                         <button
                             onClick={handleEditStatus}
-                            className='bg-blue-500 text-white p-2 mt-2 rounded'
+                            className=' text-white p-2 mt-2 rounded'
                         >
                             Guardar Cambios
                         </button>
                     </div>
                 )}
-
+                <div className='flex items-end justify-end'>
                 <button
                     onClick={onClose}
-                    className='bg-gray-500 text-white p-2 mt-4 rounded'
+                    className=' text-[#17CF97] p-2 mt-4 rounded'
                 >
                     Cerrar
                 </button>
+                <button
+                        onClick={handleAddStatus}
+                        className=' text-[#17CF97] p-2 mt-2 rounded'
+                    >
+                        Añadir Estado
+                    </button>
+
+
+                </div>
+                
             </div>
         </div>
     );
