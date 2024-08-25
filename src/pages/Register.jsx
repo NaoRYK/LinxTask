@@ -62,11 +62,13 @@ const Register = () => {
                     name="passwordInput"
                   />
                 </div>
-                <div className="w-full flex items-end justify-end mb-8">
+                <div className="w-full flex items-end justify-end mb-4">
                   <AccedButton>Acceder</AccedButton>
                 </div>
               </AuthForm>
+              <div className="mb-2">
               <GoogleButton />
+              </div>
             </div>
             <div>
               <img src={appLogo} alt="app-icon" />

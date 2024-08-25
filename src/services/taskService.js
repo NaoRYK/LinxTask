@@ -1,6 +1,8 @@
 import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, query, updateDoc, where } from "firebase/firestore";
 import { db } from "../config/firebaseConfig";
 import firebase from "firebase/compat/app";
+import useAuthStore from '../stores/userStore'
+
 
 
 export const createTask = async (projectId, taskData) => {
@@ -115,3 +117,20 @@ export const getTasksByProjectId = async (projectId) => {
     throw error;
   }
 };
+export const addComment = async (projectId, taskId, commentText,user) => {
+  
+  const commentsCollectionRef = collection(db, 'projects', projectId, 'tasks', taskId, 'comments');
+  const newComment = {
+      text: commentText,
+      userName: user.displayName, // Aquí deberías usar el nombre del usuario autenticado
+      createdAt: new Date(),
+      userPhoto: user.photoURL
+  };
+  await addDoc(commentsCollectionRef, newComment);
+};
+
+// Función para obtener todos los comentarios de una tarea
+export const getCommentsByTaskId = async (projectId, taskId) => {
+  const commentsCollectionRef = collection(db, 'projects', projectId, 'tasks', taskId, 'comments');
+  const commentSnapshot = await getDocs(commentsCollectionRef);
+  return commentSnapshot.docs.map(doc => doc.data());}

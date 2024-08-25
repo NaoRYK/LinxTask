@@ -94,7 +94,7 @@ const TaskCard = ({ task, statuses, onDeleteTask, refetchProject,onUpdateTask })
     };
 
     return (
-        <div className='taskCard w-[410px] h-[250px] rounded-[10px] shadow-lg p-6 grid grid-rows-[25px,120px,35px] relative cursor-pointer' style={{ backgroundColor: backgroundColor }}
+        <div className='taskCard w-[auto] min-w-[410px] h-[250px] rounded-[10px] shadow-lg p-6 grid grid-rows-[25px,120px,35px] relative cursor-pointer' style={{ backgroundColor: backgroundColor }}
             onClick={handleOpenCardModal}
         >
             {task.creatorId === user.uid && <button

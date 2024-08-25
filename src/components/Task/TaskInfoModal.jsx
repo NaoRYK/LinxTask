@@ -3,17 +3,22 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import { getUserById, getUserDisplayNames } from '../../services/userService'; 
 import { getTaskStatuses } from '../../services/statusService'; 
+import { addComment, getCommentsByTaskId } from '../../services/taskService';
+import useAuthStore from '../../stores/userStore';
 
 const TaskInfoModal = ({ task, onClose }) => {
     const modalRef = useRef(null);
     const [creatorData, setCreatorData] = useState();
     const [statuses, setStatuses] = useState([]);
     const [collaborators, setCollaborators] = useState([]);
-
+    const [comments, setComments] = useState([]); // Estado para los comentarios
+    const [newComment, setNewComment] = useState(''); // Estado para el nuevo comentario
     const getStatusColor = (status) => {
         const statusObj = statuses.find(s => s.name === status);
         return statusObj ? statusObj.color : '#6d6262';
     };
+
+    const {user} = useAuthStore()
 
     // Verificar si la tarea está atrasada
     const isOverdue = () => {
@@ -23,10 +28,17 @@ const TaskInfoModal = ({ task, onClose }) => {
 
     const handleClickOutside = (event) => {
         if (modalRef.current && !modalRef.current.contains(event.target)) {
-            onClose();
+           // onClose();
         }
     };
-
+    const handleAddComment = async () => {
+        if (newComment.trim()) {
+            await addComment(task.projectId, task.id, newComment,user);
+            const updatedComments = await getCommentsByTaskId(task.projectId, task.id);
+            setComments(updatedComments);
+            setNewComment('');
+        }
+    };
     useEffect(() => {
         const fetchCreatorData = async () => {
             if (task.creatorId) {
@@ -47,9 +59,14 @@ const TaskInfoModal = ({ task, onClose }) => {
             }
         };
 
+        const fetchComments = async () => {
+            const fetchedComments = await getCommentsByTaskId(task.projectId, task.id);
+            setComments(fetchedComments);
+        };
         fetchCreatorData();
         fetchStatuses();
         fetchCollaborators();
+        fetchComments();
 
         document.addEventListener('mousedown', handleClickOutside);
         return () => {
@@ -109,11 +126,42 @@ const TaskInfoModal = ({ task, onClose }) => {
       };
     return (
         <div className="fixed inset-0 flex items-center justify-center z-50 cursor-default" style={{ backdropFilter: 'blur(5px)' }}>
+                         <div className="mt-4">
+                    <h3 className="text-lg font-bold mb-2" style={{ color: darkerColor }}>Comentarios</h3>
+                    <div className="bg-gray-100 p-4 rounded-lg h-40 overflow-y-auto">
+                        {comments.length > 0 ? (
+                            comments.map((comment, index) => (
+                                <div key={index} className="mb-2">
+                                    <p className="text-sm font-semibold">{comment.userName}</p>
+                                    <p>{comment.text}</p>
+                                </div>
+                            ))
+                        ) : (
+                            <p className="text-gray-500">No hay comentarios aún.</p>
+                        )}
+                    </div>
+                    <div className="mt-2 flex">
+                        <input
+                            type="text"
+                            className="flex-1 border rounded-l-lg p-2"
+                            value={newComment}
+                            onChange={(e) => setNewComment(e.target.value)}
+                            placeholder="Escribe un comentario..."
+                        />
+                        <button
+                            onClick={handleAddComment}
+                            className="bg-blue-500 text-white rounded-r-lg p-2"
+                        >
+                            Enviar
+                        </button>
+                    </div>
+                </div>
             <div
                 className="bg-white p-6 rounded-lg shadow-lg w-[1000px] grid grid-rows-[60px,100px,1fr,60px] h-[755px] relative"
                 ref={modalRef}
                 style={{ backgroundColor: task.taskColor }}
             >
+
                 <button
                     onClick={(e) => {
                         e.stopPropagation(); // Esto evita que el evento se propague a elementos padres

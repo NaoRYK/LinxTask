@@ -154,7 +154,7 @@ const ManageStatusesModal = ({ task, onClose, projectId, onUpdateTask }) => {
     
     return (
         <div className='fixed inset-0 flex items-center justify-center bg-opacity-50 bg-gray-700'>
-            <div className='bg-[#D2F9E6] p-6 rounded-[28px] shadow-lg w-[400px] h-[400px]'>
+            <div className='bg-[#D2F9E6] p-6 rounded-[28px] shadow-lg w-[400px] h-[auto] min-h-[400px]'>
                 <h2 className='text-[24px] mb-4'>Gestionar Estados</h2>
                 
 
