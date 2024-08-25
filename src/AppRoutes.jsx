@@ -13,6 +13,7 @@ import { useEffect } from 'react';
 import ProtectedRoute from './routes/ProtectedRoute';
 import PublicRoute from './routes/PublicRoute';
 import Projects from './pages/Project';
+import PasswordReset from './pages/PasswordReset';
 function AppRoutes() {
 
   const {setUser,clearUser} = useAuthStore()
@@ -50,6 +51,7 @@ function AppRoutes() {
         <Route path="/login" element={<PublicRoute component={Login} />} />
         <Route path="/register" element={<PublicRoute component={Register}/>} />
         <Route path="/projects/:projectId" element={<ProtectedRoute component={Projects}/>} />
+        <Route path='/reset' element={<PasswordReset></PasswordReset>}></Route>
         {/* <Route path="*" element={<NotFound />} /> */}
       </Routes>
       <ToastContainer
