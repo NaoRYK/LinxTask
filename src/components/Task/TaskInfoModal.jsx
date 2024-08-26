@@ -23,7 +23,7 @@ const TaskInfoModal = ({ taskData, onClose ,  refetchProject}) => {
         return statusObj ? statusObj.color : '#6d6262'; // Color por defecto si no se encuentra el estado
     };
     
-    console.log(task);
+    console.log(comments[0], "comments");
     
     const {user} = useAuthStore()
 
@@ -49,6 +49,8 @@ const TaskInfoModal = ({ taskData, onClose ,  refetchProject}) => {
             console.error('Error al actualizar las fechas:', error);
         }
     };
+
+
     const handleEndTask = async () => {
         const currentDate = new Date();
         const endDate = currentDate.toISOString();
@@ -275,7 +277,7 @@ const TaskInfoModal = ({ taskData, onClose ,  refetchProject}) => {
                 return (
 <div key={index} className="w-[225px] flex gap-3 min-h-[80px]">
     <div style={{backgroundColor: darkColor, color: darkerColor}} className="w-[65px] flex flex-col items-center h-[80px] rounded-[12px]">
-        <img className="rounded-full w-[40px] h-[40px]" src={comment.photoURL} alt={comment.userName} />
+        <img className="rounded-full w-[40px] h-[40px]" src={comment.userPhoto} alt={comment.userName} />
         <p style={{color: darkerColor}} className="text-[10px] text-center mt-1">{comment.userName}</p>
     </div>
     <div style={{backgroundColor: darkColor}} className="w-[150px] p-2 rounded-[12px] flex flex-col justify-between min-h-[80px]">

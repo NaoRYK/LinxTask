@@ -30,10 +30,9 @@ const ProjectContainer = ({ project, children, createTask, handleAddCollaborator
     };
     
     const fetchOverdueTasks = () => {
-        // Reemplaza esto con la lógica para obtener las tareas atrasadas del proyecto
         const tasks = project.tasks || [];
         const now = new Date();
-        const overdue = tasks.filter(task => new Date(task.dueDate) < now);
+        const overdue = tasks.filter(task => new Date(task.dueDate) < now && !task.status.includes('completada'));
         setOverdueTasks(overdue);
     };
 
