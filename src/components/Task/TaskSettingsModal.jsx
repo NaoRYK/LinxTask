@@ -5,6 +5,7 @@ import ChangePriorityModal from './ChangePriorityModal';
 
 import ManageStatusesModal from './ManageStatusesModal';
 import TaskDatesModal from './TaskDateModal';
+import useAuthStore from '../../stores/userStore';
 
 const TaskSettingsModal = ({ task, onClose, statuses , refetchProject,onUpdateTask}) => {
     const modalRef = useRef(null);
@@ -12,6 +13,7 @@ const TaskSettingsModal = ({ task, onClose, statuses , refetchProject,onUpdateTa
     const [openPriorityModal, setOpenPriorityModal] = useState(false);
     const [openManageStatusesModal, setOpenManageStatusesModal] = useState(false);
     const [openTaskDatesModal,setOpenTaskDatesModal] = useState(false)
+    const {user} = useAuthStore()
     const handleOpenEditTaskModal = (e) => {
         e.preventDefault();
         e.stopPropagation();
@@ -117,13 +119,13 @@ const TaskSettingsModal = ({ task, onClose, statuses , refetchProject,onUpdateTa
         >
             Editar inicio/fin
         </button>
-        <button
+        {task.creatorId === user.uid && <button
             className='rounded-[15px] shadow-md w-[120px] h-[40px] hover:scale-105 transition-all'
             style={{ backgroundColor: baseColor, color: darkerColor }}
             onClick={handleOpenPriorityModal}
         >
             Cambiar prioridad
-        </button>
+        </button>}
         <button
     className='rounded-[15px] shadow-md w-[120px] h-[40px] hover:scale-105 transition-all'
     style={{ backgroundColor: baseColor, color: darkerColor }}
@@ -133,13 +135,13 @@ const TaskSettingsModal = ({ task, onClose, statuses , refetchProject,onUpdateTa
     Cambiar estado
 </button>
 
-        <button
+        {task.creatorId === user.uid && <button
             className='rounded-[15px] shadow-md w-[120px] h-[40px] hover:scale-105 transition-all'
             style={{ backgroundColor: baseColor, color: darkerColor }}
             onClick={handleOpenEditTaskModal}
         >
             Editar tarea
-        </button>
+        </button>}
         {openEditTaskModal && (
             <TaskEditModal
                 task={task}

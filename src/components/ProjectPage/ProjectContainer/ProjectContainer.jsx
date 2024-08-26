@@ -14,12 +14,6 @@ const ProjectContainer = ({ project, children, createTask, handleAddCollaborator
     const backgroundColor = project.color || '#FFD1D1';
     const [openCompletedTasksModal, setOpenCompletedTasksModal] = useState(false);
     const [completedTasks, setCompletedTasks] = useState([]);
-    const [filteredTasks, setFilteredTasks] = useState([]);
-    const [filterType, setFilterType] = useState('all'); // Estado para manejar el tipo de filtro
-
-    useEffect(() => {
-        applyFilter(); // Aplica el filtro cada vez que cambia el tipo de filtro
-    }, [filterType, project.tasks]);
 
     const fetchCompletedTasks = () => {
         const tasks = project.tasks || [];
@@ -51,18 +45,7 @@ const ProjectContainer = ({ project, children, createTask, handleAddCollaborator
     const handleCloseOverdueTasksModal = () => {
         setOpenOverdueTasksModal(false);
     };
-    const applyFilter = () => {
-        const tasks = project.tasks || [];
-        let filtered = tasks;
 
-        if (filterType === 'assigned') {
-            filtered = tasks.filter(task => task?.assignedTo && task?.assignedTo?.includes(user.uid));
-        } else if (filterType === 'own') {
-            filtered = tasks.filter(task => task.creatorId === user.uid);
-        }
-
-        setFilteredTasks(filtered);
-    };
     return (
         <div
             className="w-[90%] h-[85vh] grid grid-rows-[70px,100px,1fr,10%] flex-col rounded-[10px] overflow-hidden"
@@ -77,17 +60,7 @@ const ProjectContainer = ({ project, children, createTask, handleAddCollaborator
                 </div>
             </div>
             <div className='w-full flex items-center justify-center'>
-                <div className='w-[350px] h-[55px] mt-10 mb-8 overflow-hidden flex rounded-[30px] border-outlineGrey/50 border-2 text-[14px] text-[#1D192B]'>
-                <button className='w-full h-full' onClick={() => setFilterType('all')}>
-                        <p>Todas</p>
-                    </button>
-                    <button className='w-full h-full border-r-2 border-l-2 border-outlineGrey/50' onClick={() => setFilterType('assigned')}>
-                        <p>Asignadas</p>
-                    </button>
-                    <button className='w-full h-full' onClick={() => setFilterType('own')}>
-                        <p>Propias</p>
-                    </button>
-                </div>
+               
             </div>
             {children}
             <div className='flex items-center w-full justify-between pr-9'>
