@@ -3,11 +3,13 @@ import PropTypes from 'prop-types';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faX } from '@fortawesome/free-solid-svg-icons';
 import { getUsers } from '../../services/userService';
+import TaskInfoModal from './TaskInfoModal'; // Asegúrate de importar TaskInfoModal
 
-const OverdueTasksModal = ({ overdueTasks, onClose }) => {
-
+const OverdueTasksModal = ({ overdueTasks, onClose,refetchProject }) => {
     const [usersAssignedTo, setUsersAssignedTo] = useState([]);
     const [allUsers, setAllUsers] = useState([]);
+    const [openTaskInfoModal, setOpenTaskInfoModal] = useState(false);
+    const [selectedTask, setSelectedTask] = useState(null);
 
     useEffect(() => {
         const fetchAssignedToNames = async () => {
@@ -15,15 +17,12 @@ const OverdueTasksModal = ({ overdueTasks, onClose }) => {
                 const users = await getUsers(); // Obtiene todos los usuarios
                 setAllUsers(users);
                 
-
                 // Filtra los usuarios que están asignados a las tareas atrasadas
                 const assignedUserIds = new Set(
                     overdueTasks.flatMap(task => task.assignedTo || [])
                 );
                 const collaboratorsWithDetails = users.filter(user => assignedUserIds.has(user.id));
                 setUsersAssignedTo(collaboratorsWithDetails);
-                
-
             } catch (error) {
                 console.error("Error al obtener colaboradores de la tarea:", error);
             }
@@ -31,6 +30,16 @@ const OverdueTasksModal = ({ overdueTasks, onClose }) => {
 
         fetchAssignedToNames();
     }, [overdueTasks]);
+
+    const handleTaskClick = (task) => {
+        setSelectedTask(task);
+        setOpenTaskInfoModal(true);
+    };
+
+    const handleCloseTaskInfoModal = () => {
+        setOpenTaskInfoModal(false);
+        setSelectedTask(null);
+    };
 
     return (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
@@ -45,7 +54,11 @@ const OverdueTasksModal = ({ overdueTasks, onClose }) => {
                     {overdueTasks.length > 0 ? (
                         <ul>
                             {overdueTasks.map(task => (
-                                <li key={task.id} className="py-2 border-b">
+                                <li 
+                                    key={task.id} 
+                                    className="py-2 border-b cursor-pointer" 
+                                    onClick={() => handleTaskClick(task)}
+                                >
                                     <span className="font-semibold">{task.name}</span>
                                     <p className="text-gray-600">{task.description}</p>
                                     <p className="text-gray-600">
@@ -62,6 +75,13 @@ const OverdueTasksModal = ({ overdueTasks, onClose }) => {
                     )}
                 </div>
             </div>
+            {openTaskInfoModal && 
+                <TaskInfoModal
+                    refetchProject={refetchProject}
+                    taskData={selectedTask}
+                    onClose={handleCloseTaskInfoModal}
+                />
+            }
         </div>
     );
 };

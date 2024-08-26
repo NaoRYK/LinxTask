@@ -103,6 +103,7 @@ const ProjectContainer = ({ project, children, createTask, handleAddCollaborator
                 <OverdueTasksModal
                     overdueTasks={overdueTasks}
                     onClose={handleCloseOverdueTasksModal}
+                    refetchProject={refetchProject}
                 />
             )}
             {openCompletedTasksModal && (

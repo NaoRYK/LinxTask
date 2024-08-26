@@ -115,7 +115,7 @@ const Project = () => {
     }
   };
 
-  const lighterColor = darkenColor(project?.color, -0.1);
+  const lighterColor = darkenColor(project?.color, -0.2);
   const darkerColor = darkenColor(project?.color, 0.2);
   const darkestColor = darkenColor(project?.color, 0.4);
 
