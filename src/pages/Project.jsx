@@ -118,6 +118,7 @@ const Project = () => {
       <ProjectContainer
         handleAddCollaboratorsButton={handleAddCollaboratorsButton}
         project={project}
+        refetchProject={refetchProject}
         createTask={handleCreateTaskButton}
       >
         <div className='p-8 flex flex-wrap gap-4 justify-center overflow-y-auto'>

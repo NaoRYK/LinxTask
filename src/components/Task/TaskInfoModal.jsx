@@ -1,12 +1,14 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faPlay, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { getUserById, getUserDisplayNames } from '../../services/userService'; 
-import { getTaskStatuses } from '../../services/statusService'; 
-import { addComment, getCommentsByTaskId } from '../../services/taskService';
+import { getTaskStatuses, updateStatus } from '../../services/statusService'; 
+import { addComment, getCommentsByTaskId, updateTaskDates, updateTaskEnd, updateTaskStartDate, updateTaskStatusInDatabase } from '../../services/taskService';
 import useAuthStore from '../../stores/userStore';
 
-const TaskInfoModal = ({ task, onClose }) => {
+const TaskInfoModal = ({ taskData, onClose ,  refetchProject}) => {
+    const [task, setTask] = useState(taskData);
+
     const modalRef = useRef(null);
     const [creatorData, setCreatorData] = useState();
     const [statuses, setStatuses] = useState([]);
@@ -14,9 +16,13 @@ const TaskInfoModal = ({ task, onClose }) => {
     const [comments, setComments] = useState([]); // Estado para los comentarios
     const [newComment, setNewComment] = useState(''); // Estado para el nuevo comentario
     const getStatusColor = (status) => {
-        const statusObj = statuses.find(s => s.name === status);
-        return statusObj ? statusObj.color : '#6d6262';
+        // Encuentra el objeto de estado usando el nombre del estado
+        const statusObj = statuses.find(s => s.name.toLowerCase() === status.toLowerCase());
+        console.log(statuses);
+        
+        return statusObj ? statusObj.color : '#6d6262'; // Color por defecto si no se encuentra el estado
     };
+    
 
     const {user} = useAuthStore()
 
@@ -25,7 +31,53 @@ const TaskInfoModal = ({ task, onClose }) => {
         const dueDateTimestamp = parseDate(task.dueDate);
         return dueDateTimestamp < new Date();
     };
+    const handleStartTask = async () => {
+        const currentDate = new Date();
+        const startDate = currentDate.toISOString();
+    
+        try {
+            await updateTaskStartDate(task.projectId, task.id, startDate);
+            // Actualiza el estado local con los nuevos valores
+            setTask({
+                ...taskData,
+                startDate,
+                
+            });
+            refetchProject()
+        } catch (error) {
+            console.error('Error al actualizar las fechas:', error);
+        }
+    };
+    const handleEndTask = async () => {
+        const currentDate = new Date();
+        const endDate = currentDate.toISOString();
+      
+        try {
+            await updateTaskEnd(task.projectId, task.id, endDate);
+            
+            // Actualiza el estado local con los nuevos valores
+            setTask({
+                ...taskData,
+                endDate,
+            });
+    
+            // Actualiza el estado de la tarea a 'completado'
+            await updateTaskStatusInDatabase(task.projectId, task.id, 'completada');
+            
+            const fetchedStatuses = await getTaskStatuses(task.projectId);
+            
+            setStatuses(fetchedStatuses);
+            refetchProject();
+            onClose()
+            
+            
+        } catch (error) {
+            console.error('Error al actualizar la fecha de finalización:', error);
+        }
+    };
 
+
+    
     const handleClickOutside = (event) => {
         if (modalRef.current && !modalRef.current.contains(event.target)) {
            // onClose();
@@ -48,7 +100,7 @@ const TaskInfoModal = ({ task, onClose }) => {
         };
 
         const fetchStatuses = async () => {
-            const fetchedStatuses = await getTaskStatuses();
+            const fetchedStatuses = await getTaskStatuses(task.projectId);
             setStatuses(fetchedStatuses);
         };
 
@@ -126,7 +178,7 @@ const TaskInfoModal = ({ task, onClose }) => {
       };
     return (
         <div className="fixed inset-0 flex items-center justify-center z-50 cursor-default" style={{ backdropFilter: 'blur(5px)' }}>
-                         <div className="mt-4">
+            {task?.allowComments &&                          <div className="mt-4">
                     <h3 className="text-lg font-bold mb-2" style={{ color: darkerColor }}>Comentarios</h3>
                     <div className="bg-gray-100 p-4 rounded-lg h-40 overflow-y-auto">
                         {comments.length > 0 ? (
@@ -155,7 +207,7 @@ const TaskInfoModal = ({ task, onClose }) => {
                             Enviar
                         </button>
                     </div>
-                </div>
+                </div>}
             <div
                 className="bg-white p-6 rounded-lg shadow-lg w-[1000px] grid grid-rows-[60px,100px,1fr,60px] h-[755px] relative"
                 ref={modalRef}
@@ -187,7 +239,23 @@ const TaskInfoModal = ({ task, onClose }) => {
                         )}
                     </div>
                     <div className='flex gap-2 flex-wrap'>
-                        {task.priority && (
+                       
+                        {
+                            task.startDate && !task.endDate && !task.status.includes('completada') &&
+                             <p
+                                className='p-1 rounded-[10px] w-[110px] text-center h-[30px] text-[15px] font-semibold text-white overflow-hidden text-ellipsis'
+                                style={{ backgroundColor: darkColor, color:darkerColor }}
+                            >
+                                <FontAwesomeIcon  icon={faPlay}></FontAwesomeIcon> En curso
+                            </p>
+                        }
+                        {/* Mostrar etiqueta de "Atrasada" si la tarea está atrasada */}
+                        {isOverdue() && !task.status.includes('completada') && (
+                            <p className='p-1 rounded-[10px] w-[110px] text-center h-[30px] text-[15px] font-semibold text-white overflow-hidden text-ellipsis bg-red-500'>
+                                Atrasada
+                            </p>
+                        )}
+                         {task.priority && (
                             <p
                                 className='p-1 rounded-[10px] bg-red-600 w-[110px] text-center h-[30px] text-[15px] font-semibold text-white overflow-hidden text-ellipsis'
                             >
@@ -203,12 +271,6 @@ const TaskInfoModal = ({ task, onClose }) => {
                                 {status.charAt(0).toUpperCase() + status.slice(1)}
                             </p>
                         ))}
-                        {/* Mostrar etiqueta de "Atrasada" si la tarea está atrasada */}
-                        {isOverdue() && (
-                            <p className='p-1 rounded-[10px] w-[110px] text-center h-[30px] text-[15px] font-semibold text-white overflow-hidden text-ellipsis bg-red-500'>
-                                Atrasada
-                            </p>
-                        )}
                     </div>
                 </div>
                 <div className='rounded-[20px] p-2' style={{backgroundColor: darkColor}}>
@@ -220,6 +282,9 @@ const TaskInfoModal = ({ task, onClose }) => {
                         Colaboradores: <span className='text-primaryDark'>{collaborators.map(collab => collab.name).join(', ')}</span>
                     </p>
                     <p>Fecha limite: <span className='text-primaryDark'> {formattedDueDate}</span></p>
+                    {        !task.startDate && !task.endDate &&       <button onClick={handleStartTask} className='w-[190px] h-[50px] rounded-[100px] border-2' style={{backgroundColor:darkColor, borderColor:darkerColor, color:darkerColor}}>Comenzar tarea</button>
+                }
+                {task.startDate && !task.endDate && !task.status.includes('completada') && <button onClick={handleEndTask} className='w-[190px] h-[50px] rounded-[100px] border-2' style={{backgroundColor:darkColor, borderColor:darkerColor, color:darkerColor}}>Finalizar tarea</button> }
                 </div>
             </div>
         </div>

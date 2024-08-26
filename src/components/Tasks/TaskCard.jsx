@@ -1,5 +1,5 @@
 import { faClock } from '@fortawesome/free-regular-svg-icons';
-import { faCaretRight, faEllipsisV, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faCaretRight, faEllipsisV, faPlay, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { useState } from 'react';
 import { deleteTask, getTaskById } from '../../services/taskService';
@@ -22,14 +22,14 @@ const TaskCard = ({ task, statuses, onDeleteTask, refetchProject,onUpdateTask })
             setOpenCardModal(true);
         }
     };
-    const handleUpdateTask = async () => {
-        try {
-            const updatedTask = await getTaskById(task.id, task.projectId);
-            onUpdateTask(updatedTask); 
-        } catch (error) {
-            console.error('Error al obtener la tarea actualizada:', error);
-        }
-    };
+const handleUpdateTask = async () => {
+    try {
+        const updatedTask = await getTaskById(task.id, task.projectId);
+        onUpdateTask(updatedTask);
+    } catch (error) {
+        console.error('Error al obtener la tarea actualizada:', error);
+    }
+};
     
 
     const handleToggleCardSettingsModal = (e) => {
@@ -148,15 +148,20 @@ const TaskCard = ({ task, statuses, onDeleteTask, refetchProject,onUpdateTask })
                                 {status.charAt(0).toUpperCase() + status.slice(1)}
                             </p>
                         ))}
-                        {isOverdue && (
-                            <p className='p-1 taskCard rounded-[10px] w-[100px] text-center h-[30px] text-[15px] font-semibold text-white overflow-hidden text-ellipsis bg-red-500'>
-                                Atrasada
-                            </p>
-                        )}
+{isOverdue && !task.status.includes("completada") && (
+    <p className='p-1 taskCard rounded-[10px] w-[100px] text-center h-[30px] text-[15px] font-semibold text-white overflow-hidden text-ellipsis bg-red-500'>
+        Atrasada
+    </p>
+)}
+                        {task.startDate && !task.endDate && !task.status.includes('completada') &&<p   style={{ backgroundColor: darkerColor, color:darkestColor }} className='p-1 taskCard rounded-[10px] w-[100px] text-center h-[30px] text-[15px] font-semibold  overflow-hidden text-ellipsis '>
+                          
+                           
+                                <FontAwesomeIcon  icon={faPlay}></FontAwesomeIcon> En curso
+                            </p>}
                     </div>
                 </div>
             </div>
-            {openCardModal && <TaskInfoModal task={task} onClose={handleCloseCardModal} />}
+            {openCardModal && <TaskInfoModal   refetchProject={refetchProject} taskData={task} onClose={handleCloseCardModal} />}
             {openTaskEditModal && (
                 <TaskEditModal
                     task={task}

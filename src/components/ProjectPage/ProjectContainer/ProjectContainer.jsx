@@ -1,17 +1,40 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { faCirclePlus, faCross, faMagnifyingGlass, faPen, faX } from '@fortawesome/free-solid-svg-icons';
+import { faCirclePlus, faClock, faCross, faMagnifyingGlass, faPen, faX } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Link } from 'react-router-dom';
 import useAuthStore from '../../../stores/userStore';
 import OverdueTasksModal from '../../Task/OverdueTaskModal';
-const ProjectContainer = ({ project, children, createTask, handleAddCollaboratorsButton }) => {
+import CompletedTasksModal from '../../Task/CompletedTaskModal';
+const ProjectContainer = ({ project, children, createTask, handleAddCollaboratorsButton,refetchProject }) => {
     const { user } = useAuthStore();
     const [openOverdueTasksModal, setOpenOverdueTasksModal] = useState(false);
     const [overdueTasks, setOverdueTasks] = useState([]);
 
     const backgroundColor = project.color || '#FFD1D1';
+    const [openCompletedTasksModal, setOpenCompletedTasksModal] = useState(false);
+    const [completedTasks, setCompletedTasks] = useState([]);
+    const [filteredTasks, setFilteredTasks] = useState([]);
+    const [filterType, setFilterType] = useState('all'); // Estado para manejar el tipo de filtro
 
+    useEffect(() => {
+        applyFilter(); // Aplica el filtro cada vez que cambia el tipo de filtro
+    }, [filterType, project.tasks]);
+
+    const fetchCompletedTasks = () => {
+        const tasks = project.tasks || [];
+        const completed = tasks.filter(task => task.status.includes('completada'));
+        setCompletedTasks(completed);
+    };
+    const handleOpenCompletedTasksModal = () => {
+        fetchCompletedTasks();
+        setOpenCompletedTasksModal(true);
+    };
+    
+    const handleCloseCompletedTasksModal = () => {
+        setOpenCompletedTasksModal(false);
+    };
+    
     const fetchOverdueTasks = () => {
         // Reemplaza esto con la lógica para obtener las tareas atrasadas del proyecto
         const tasks = project.tasks || [];
@@ -28,7 +51,18 @@ const ProjectContainer = ({ project, children, createTask, handleAddCollaborator
     const handleCloseOverdueTasksModal = () => {
         setOpenOverdueTasksModal(false);
     };
+    const applyFilter = () => {
+        const tasks = project.tasks || [];
+        let filtered = tasks;
 
+        if (filterType === 'assigned') {
+            filtered = tasks.filter(task => task?.assignedTo && task?.assignedTo?.includes(user.uid));
+        } else if (filterType === 'own') {
+            filtered = tasks.filter(task => task.creatorId === user.uid);
+        }
+
+        setFilteredTasks(filtered);
+    };
     return (
         <div
             className="w-[90%] h-[85vh] grid grid-rows-[70px,100px,1fr,10%] flex-col rounded-[10px] overflow-hidden"
@@ -44,9 +78,15 @@ const ProjectContainer = ({ project, children, createTask, handleAddCollaborator
             </div>
             <div className='w-full flex items-center justify-center'>
                 <div className='w-[350px] h-[55px] mt-10 mb-8 overflow-hidden flex rounded-[30px] border-outlineGrey/50 border-2 text-[14px] text-[#1D192B]'>
-                    <button className='w-full h-full'><p>Todas</p></button>
-                    <button className='w-full h-full border-r-2 border-l-2 border-outlineGrey/50'><p>Asignadas</p></button>
-                    <button className='w-full h-full'><p>Propias</p></button>
+                <button className='w-full h-full' onClick={() => setFilterType('all')}>
+                        <p>Todas</p>
+                    </button>
+                    <button className='w-full h-full border-r-2 border-l-2 border-outlineGrey/50' onClick={() => setFilterType('assigned')}>
+                        <p>Asignadas</p>
+                    </button>
+                    <button className='w-full h-full' onClick={() => setFilterType('own')}>
+                        <p>Propias</p>
+                    </button>
                 </div>
             </div>
             {children}
@@ -75,6 +115,16 @@ const ProjectContainer = ({ project, children, createTask, handleAddCollaborator
                         </button>
                     </div>
                 )}
+                {user.uid === project.creatorId && (
+                    <div className='relative'>
+                        <button
+                            onClick={handleOpenCompletedTasksModal}
+                            className='bg-loginGreen rounded-[16px] top-[-2rem] right-1 absolute w-[155px] flex items-center justify-center gap-2 h-[65px] text-tertiaryGreen'>
+                            <FontAwesomeIcon className='ml-2' icon={faClock} />
+                            <p>Ver horas acumuladas</p>
+                        </button>
+                    </div>
+                )}
             </div>
             {openOverdueTasksModal && (
                 <OverdueTasksModal
@@ -82,6 +132,14 @@ const ProjectContainer = ({ project, children, createTask, handleAddCollaborator
                     onClose={handleCloseOverdueTasksModal}
                 />
             )}
+            {openCompletedTasksModal && (
+    <CompletedTasksModal
+    refetchProject={refetchProject}
+        completedTasks={completedTasks}
+        onClose={handleCloseCompletedTasksModal}
+    />
+)}
+
         </div>
     );
 };

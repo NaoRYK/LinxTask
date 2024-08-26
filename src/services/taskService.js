@@ -134,3 +134,127 @@ export const getCommentsByTaskId = async (projectId, taskId) => {
   const commentsCollectionRef = collection(db, 'projects', projectId, 'tasks', taskId, 'comments');
   const commentSnapshot = await getDocs(commentsCollectionRef);
   return commentSnapshot.docs.map(doc => doc.data());}
+  export const updateTaskDates = async (projectId, taskId, startDate, endDate = null) => {
+    try {
+      // Referencia al documento de la tarea en la subcolección 'tasks' del proyecto
+      const taskRef = doc(db, 'projects', projectId, 'tasks', taskId);
+  
+      // Obtener la tarea actual para modificar los estados
+      const taskDoc = await getDoc(taskRef);
+  
+      if (taskDoc.exists()) {
+        const taskData = taskDoc.data();
+        const currentStatus = taskData.status || [];
+        const currentEndDate = taskData.endDate;
+  
+        // Actualizar las fechas de inicio y fin de la tarea
+        await updateDoc(taskRef, {
+          startDate: startDate,
+          endDate: endDate
+        });
+  
+        // Verificar si la fecha de finalización está vacía
+        if (!endDate) {
+          // Eliminar el estado 'completada' si está presente
+          const withoutCompleted = currentStatus.filter(status => status !== 'completada');
+
+          if(!withoutCompleted.includes('pendiente')){
+
+            const updatedStatus = [...withoutCompleted, 'pendiente'];
+            await updateDoc(taskRef, { status: updatedStatus });
+          }
+          // Actualizar el estado en la base de datos
+          console.log("Estado 'completada' eliminado porque la fecha de finalización está vacía");
+        } else if (endDate) {
+          // Si antes no había endDate y ahora se ha añadido, agregar el estado 'completada'
+          
+          if(!currentStatus.includes('completada')){
+            const withoutPendient = currentStatus.filter(status => status !== 'pendiente')
+            const updatedStatus = [...withoutPendient, 'completada'];
+            await updateDoc(taskRef, { status: updatedStatus });
+          }
+          console.log("Estado 'completada' añadido porque se ha establecido una fecha de finalización");
+        }
+  
+        console.log("Fechas de la tarea actualizadas exitosamente");
+      } else {
+        console.error('La tarea no existe.');
+      }
+    } catch (error) {
+      console.error("Error al actualizar las fechas de la tarea:", error);
+    }
+  };
+  
+  export const updateTaskStartDate = async (projectId, taskId, startDate = null)  => {
+    try {
+      // Referencia al documento de la tarea en la subcolección 'tasks' del proyecto
+      const taskRef = doc(db, 'projects', projectId, 'tasks', taskId);
+  
+      // Actualizar las fechas de inicio y fin de la tarea
+      await updateDoc(taskRef, {
+        startDate: startDate,
+       
+      });
+  
+      console.log("Fechas de la tarea actualizadas exitosamente");
+    } catch (error) {
+      console.error("Error al actualizar las fechas de la tarea:", error);
+    }
+  };
+  export const updateTaskEnd = async (projectId, taskId, endDate )  => {
+    try {
+      // Referencia al documento de la tarea en la subcolección 'tasks' del proyecto
+      const taskRef = doc(db, 'projects', projectId, 'tasks', taskId);
+  
+      // Actualizar las fechas de inicio y fin de la tarea
+      await updateDoc(taskRef, {
+
+        endDate: endDate 
+
+       
+      });
+  
+      console.log("Fechas de la tarea actualizadas exitosamente");
+    } catch (error) {
+      console.error("Error al actualizar las fechas de la tarea:", error);
+    }
+  };
+  export const updateTaskStatusInDatabase = async (projectId, taskId, newStatus) => {
+    try {
+      // Referencia a la tarea en la subcolección 'tasks' del proyecto
+      const taskRef = doc(db, 'projects', projectId, 'tasks', taskId);
+  
+      // Obtener la tarea actual para modificar los estados
+      const taskDoc = await getDoc(taskRef);
+  
+      if (taskDoc.exists()) {
+        const taskData = taskDoc.data();
+        const currentStatus = taskData.status || [];
+        const endDate = taskData.endDate;
+  
+        // Verificar si la fecha de finalización está vacía
+        if (!endDate) {
+          // Eliminar el estado 'completada' si está presente
+          const updatedStatus = currentStatus.filter(status => status !== 'completada');
+          
+          // Actualizar el estado en la base de datos
+          await updateDoc(taskRef, { status: updatedStatus });
+          console.log("Estado 'completada' eliminado porque la fecha de finalización está vacía");
+        } else {
+          // Eliminar el estado 'pendiente' si existe
+          const updatedStatus = currentStatus.filter(status => status !== 'pendiente');
+          
+          // Agregar el nuevo estado
+          updatedStatus.push(newStatus);
+          
+          // Actualizar el estado en la base de datos
+          await updateDoc(taskRef, { status: updatedStatus });
+          console.log("Estado de la tarea actualizado exitosamente");
+        }
+      } else {
+        console.error('La tarea no existe.');
+      }
+    } catch (error) {
+      console.error('Error al actualizar el estado de la tarea:', error);
+    }
+  };

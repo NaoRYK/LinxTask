@@ -27,6 +27,7 @@ const TaskForm = ({
   const [taskDate, setTaskDate] = useState("");
   const [taskColor, setTaskColor] = useState("#ffffff");
   const [taskPriority, setTaskPriority] = useState(false);
+  const [taskAllowComments, setTaskAllowComments] = useState(false);
   const [collaborators, setCollaborators] = useState([]);
   const [filteredCollaborators, setFilteredCollaborators] = useState([]);
   const [selectedCollaborators, setSelectedCollaborators] = useState([]);
@@ -76,6 +77,7 @@ const TaskForm = ({
       priority: taskPriority,
       assignedTo: selectedCollaborators,
       taskColor: taskColor,
+      allowComments:taskAllowComments
     };
 
     createTask(projectId, taskData)
@@ -87,6 +89,7 @@ const TaskForm = ({
         setTaskDesc("");
         setTaskDate("");
         setTaskPriority(false);
+        setTaskAllowComments(false);
         setSelectedCollaborators([]);
         setTaskColor("#FFED88");
       })
@@ -190,11 +193,33 @@ const TaskForm = ({
         </div>
 
         <div
-          className="rounded-[20px] p-2 flex items-center "
-          style={{ backgroundColor: darkenedColor }}
+          className="rounded-[20px] p-2 flex gap-2 items-center "
+          
         >
-          <label className="flex items-center flex-col gap-2 space-x-2">
+          <label style={{ backgroundColor: darkenedColor }}  className=" w-[125px] justify-center h-[100px] rounded-[20px] flex items-center flex-col gap-2 space-x-2">
             <span className="text-[20px] font-bold">Prioritaria</span>
+
+            <span
+              className={`flex items-center justify-center w-6 h-6 rounded border-2 border-${darkestColor} 
+                            ${
+                              taskAllowComments
+                                ? `bg-${darkenedColor} border-${darkestColor}`
+                                : `bg-transparent`
+                            }`}
+            >
+              {taskAllowComments && (
+                <FontAwesomeIcon icon={faCheck}></FontAwesomeIcon>
+              )}
+            </span>
+            <input
+              type="checkbox"
+              checked={taskAllowComments}
+              onChange={(e) => setTaskAllowComments(e.target.checked)}
+              className="hidden"
+            />
+          </label>
+          <label style={{ backgroundColor: darkenedColor }}  className=" w-[125px] justify-center h-[100px] rounded-[20px] flex items-center flex-col gap-2 space-x-2">
+            <span className="text-[20px] font-bold">Comentarios</span>
 
             <span
               className={`flex items-center justify-center w-6 h-6 rounded border-2 border-${darkestColor} 
