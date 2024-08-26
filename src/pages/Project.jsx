@@ -174,21 +174,27 @@ const Project = () => {
         createTask={handleCreateTaskButton}
       >
         <div className='p-8 flex flex-wrap gap-4 justify-center overflow-y-auto'>
-          {filteredTasks().length > 0 ? (
-            filteredTasks().map((task) => (
-              <TaskCard
-                refetchProject={refetchProject}
-                onDeleteTask={onDeleteTask}
-                statuses={statuses}
-                task={task}
-                key={task.id}
-                onUpdateTask={onUpdateTask}
-              />
-            ))
-          ) : (
-            <p>Todavía no hay ninguna tarea creada...</p>
-          )}
-        </div>
+  {filteredTasks().length > 0 ? (
+    filteredTasks().map((task) => {
+      if (!task || !task.id) {
+        console.error('Tarea inválida encontrada:', task);
+        return null; // Evita renderizar si la tarea es inválida
+      }
+      return (
+        <TaskCard
+          refetchProject={refetchProject}
+          onDeleteTask={onDeleteTask}
+          statuses={statuses}
+          task={task}
+          key={task.id}
+          onUpdateTask={onUpdateTask}
+        />
+      );
+    })
+  ) : (
+    <p>Todavía no hay ninguna tarea creada...</p>
+  )}
+</div>
       </ProjectContainer>
 
       {openCollaboratorsModal && (

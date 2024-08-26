@@ -101,6 +101,7 @@ const ProjectContainer = ({ project, children, createTask, handleAddCollaborator
             </div>
             {openOverdueTasksModal && (
                 <OverdueTasksModal
+                project={project}
                     overdueTasks={overdueTasks}
                     onClose={handleCloseOverdueTasksModal}
                     refetchProject={refetchProject}
@@ -108,6 +109,7 @@ const ProjectContainer = ({ project, children, createTask, handleAddCollaborator
             )}
             {openCompletedTasksModal && (
     <CompletedTasksModal
+    project={project}
     refetchProject={refetchProject}
         completedTasks={completedTasks}
         onClose={handleCloseCompletedTasksModal}

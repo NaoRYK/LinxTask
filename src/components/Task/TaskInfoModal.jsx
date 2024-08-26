@@ -23,7 +23,8 @@ const TaskInfoModal = ({ taskData, onClose ,  refetchProject}) => {
         return statusObj ? statusObj.color : '#6d6262'; // Color por defecto si no se encuentra el estado
     };
     
-
+    console.log(task);
+    
     const {user} = useAuthStore()
 
     // Verificar si la tarea está atrasada
@@ -127,8 +128,8 @@ const TaskInfoModal = ({ taskData, onClose ,  refetchProject}) => {
     }, [task.creatorId, task.assignedTo, onClose]);
 
     const backgroundColor = task.taskColor || '#FFED88';
-    const darkerColor = darkenColor(backgroundColor, 0.4);
     const lighterColor = darkenColor(backgroundColor, -0.4);
+    const darkerColor = darkenColor(backgroundColor, 0.4);
     const darkColor = darkenColor(backgroundColor, 0.2);
 
     // Función para convertir `createdAt` a una fecha formateada
@@ -178,36 +179,7 @@ const TaskInfoModal = ({ taskData, onClose ,  refetchProject}) => {
       };
     return (
         <div className="fixed inset-0 flex items-center justify-center z-50 cursor-default" style={{ backdropFilter: 'blur(5px)' }}>
-            {task?.allowComments &&                          <div className="mt-4">
-                    <h3 className="text-lg font-bold mb-2" style={{ color: darkerColor }}>Comentarios</h3>
-                    <div className="bg-gray-100 p-4 rounded-lg h-40 overflow-y-auto">
-                        {comments.length > 0 ? (
-                            comments.map((comment, index) => (
-                                <div key={index} className="mb-2">
-                                    <p className="text-sm font-semibold">{comment.userName}</p>
-                                    <p>{comment.text}</p>
-                                </div>
-                            ))
-                        ) : (
-                            <p className="text-gray-500">No hay comentarios aún.</p>
-                        )}
-                    </div>
-                    <div className="mt-2 flex">
-                        <input
-                            type="text"
-                            className="flex-1 border rounded-l-lg p-2"
-                            value={newComment}
-                            onChange={(e) => setNewComment(e.target.value)}
-                            placeholder="Escribe un comentario..."
-                        />
-                        <button
-                            onClick={handleAddComment}
-                            className="bg-blue-500 text-white rounded-r-lg p-2"
-                        >
-                            Enviar
-                        </button>
-                    </div>
-                </div>}
+
             <div
                 className="bg-white p-6 rounded-lg shadow-lg w-[1000px] grid grid-rows-[60px,100px,1fr,60px] h-[755px] relative"
                 ref={modalRef}
@@ -287,6 +259,50 @@ const TaskInfoModal = ({ taskData, onClose ,  refetchProject}) => {
                 {task.startDate && !task.endDate && !task.status.includes('completada') && <button onClick={handleEndTask} className='w-[190px] h-[50px] rounded-[100px] border-2' style={{backgroundColor:darkColor, borderColor:darkerColor, color:darkerColor}}>Finalizar tarea</button> }
                 </div>
             </div>
+            <div style={{backgroundColor: task.taskColor}} className="h-[755px] ml-4 rounded-[20px] p-4 flex flex-col gap-4 w-[300px]">
+    <h3 className="text-[24px] text-center font-bold mb-2" style={{ color: darkerColor }}>Comentarios</h3>
+    <div className="p-4 rounded-lg h-[90%] flex flex-col gap-2 overflow-y-auto overflow-x-hidden">
+        {comments.length > 0 ? (
+            comments.map((comment, index) => {
+                const createdAtTimestamp = parseDate(comment.createdAt);
+                const formattedCreatedAt = isNaN(createdAtTimestamp) ? 'Fecha inválida' : createdAtTimestamp.toLocaleDateString('es-ES', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+                return (
+<div key={index} className="w-[225px] flex gap-3 min-h-[80px]">
+    <div style={{backgroundColor: darkColor, color: darkerColor}} className="w-[65px] flex flex-col items-center h-[80px] rounded-[12px]">
+        <img className="rounded-full w-[40px] h-[40px]" src={comment.photoURL} alt={comment.userName} />
+        <p style={{color: darkerColor}} className="text-[10px] text-center mt-1">{comment.userName}</p>
+    </div>
+    <div style={{backgroundColor: darkColor}} className="w-[150px] p-2 rounded-[12px] flex flex-col justify-between min-h-[80px]">
+        <p className="text-wrap break-words" style={{color: darkerColor, wordWrap: 'break-word'}}>{comment.text}</p>
+        <p className="text-[10px] text-end text-gray-500 mt-2">{formattedCreatedAt}</p>
+    </div>
+</div>
+
+                );
+            })
+        ) : (
+            <p style={{color: darkerColor}}>No hay comentarios aún.</p>
+        )}
+    </div>
+    <div className="mt-auto">
+        <textarea
+            value={newComment}
+            onChange={(e) => setNewComment(e.target.value)}
+            placeholder="Escribe un comentario..."
+            className="w-full p-2 rounded-lg border"
+            style={{borderColor: darkerColor, color: darkerColor, backgroundColor: darkColor}}
+        />
+        <button onClick={handleAddComment} className="mt-2 w-full py-2 rounded-lg" style={{backgroundColor: darkerColor, color: '#fff'}}>
+            Agregar comentario
+        </button>
+    </div>
+</div>
         </div>
     );
 };

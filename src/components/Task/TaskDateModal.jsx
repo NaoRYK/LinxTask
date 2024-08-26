@@ -43,7 +43,7 @@ const TaskDatesModal = ({ task, onClose, onSave }) => {
                             value={startDate}
                             onChange={(e) => setStartDate(e.target.value)}
                             required
-                            className="w-full bg-gray-800 text-gray-300 rounded-[15px] p-2 mt-2 focus:outline-none focus:ring-2 focus:ring-gray-500"
+                            className="w-full bg-loginGreen text-textGreen rounded-[15px] p-2 mt-2 focus:outline-none focus:ring-2 focus:ring-tertiaryGreen"
                             max={dueDate || undefined} // Limita la fecha máxima al valor de dueDate si está definido
                         />
                     </div>
@@ -62,7 +62,7 @@ const TaskDatesModal = ({ task, onClose, onSave }) => {
                             value={dueDate}
                             onChange={(e) => setDueDate(e.target.value)}
                             required
-                            className="w-full bg-gray-800 text-gray-300 rounded-[15px] p-2 mt-2 focus:outline-none focus:ring-2 focus:ring-gray-500"
+                            className="w-full bg-loginGreen text-textGreen rounded-[15px] p-2 mt-2 focus:outline-none focus:ring-2 focus:ring-tertiaryGreen"
                             min={startDate || undefined} // Limita la fecha mínima al valor de startDate si está definido
                         />
                     </div>
@@ -73,13 +73,13 @@ const TaskDatesModal = ({ task, onClose, onSave }) => {
                 <div className='mt-4 flex justify-end w-full'>
                     <button
                         onClick={onClose}
-                        className='ml-2 text-gray-700 px-4 py-2 rounded hover:bg-gray-200'
+                        className='ml-2 text-gray-700 px-4 py-2 rounded hover:bg-tertiaryGreen/20'
                     >
                         Cancelar
                     </button>
                     <button
                         onClick={handleSave}
-                        className='text-gray-700 px-4 py-2 rounded hover:bg-gray-200'
+                        className='text-gray-700 px-4 py-2 rounded hover:bg-tertiaryGreen/20'
                     >
                         Guardar
                     </button>
