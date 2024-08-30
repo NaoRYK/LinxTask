@@ -11,7 +11,7 @@ const Navbar = () => {
   const [openEditProfile, setOpenEditProfile] = useState(false);
 
   const handleOpenEditProfileModal = () => {
-    setOpenLogout(false); // Cierra el modal de logout si está abierto
+    setOpenLogout(false); 
     setOpenEditProfile(true);
   };
 

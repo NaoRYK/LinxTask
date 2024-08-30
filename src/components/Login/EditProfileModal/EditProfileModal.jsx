@@ -9,7 +9,7 @@ import { auth } from '../../../config/firebaseConfig';
 const EditProfileModal = ({ user, onClose }) => {
   const [displayName, setDisplayName] = useState(user.displayName);
   const [file, setFile] = useState(null);
-  const { setUser } = useAuthStore.getState(); // Usar el hook de Zustand
+  const { setUser } = useAuthStore.getState(); 
 
   const handleClickOutside = (event) => {
     if (event.target.id === 'edit-profile-modal') {
@@ -52,7 +52,7 @@ const EditProfileModal = ({ user, onClose }) => {
   };
 
   const handleClose = () => {
-    setFile(null); // Limpiar el archivo seleccionado
+    setFile(null); 
     setDisplayName(user.displayName); // Restaurar el nombre de usuario original
     onClose();
   };

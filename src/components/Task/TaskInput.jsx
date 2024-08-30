@@ -61,7 +61,7 @@ const TaskInput = ({
                     value={value}
                     onChange={onChange}
                     className={inputStyles}
-                    style={{ backgroundColor: value }} // El color de fondo del input color se establece automáticamente
+                    style={{ backgroundColor: value }} 
                 />
             </label>
         );

@@ -42,9 +42,9 @@ const AddCollaboratorsModal = ({ projectId, onClose, onCollaboratorsUpdated,proj
     const fetchExistingCollaborators = async () => {
       try {
         const collaboratorIds = await getProjectCollaborators(projectId);
-        const allUsers = await getUsers(); // Obtiene todos los usuarios
+        const allUsers = await getUsers(); // obtengo todos los usuarios
 
-        // Filtra los usuarios que son colaboradores actuales
+        // filtrar los usuarios que son colaboradores actuales
         const collaboratorsWithDetails = allUsers.filter(user => collaboratorIds.includes(user.id));
         setExistingCollaborators(collaboratorsWithDetails);
       } catch (error) {
@@ -68,7 +68,7 @@ const AddCollaboratorsModal = ({ projectId, onClose, onCollaboratorsUpdated,proj
   const handleAddCollaborators = async () => {
     try {
       await addCollaboratorsToProject(projectId, selectedUsers);
-      onCollaboratorsUpdated(); // Llama a la función de callback aquí
+      onCollaboratorsUpdated(); 
       onClose();
       setShowModal(false);
     } catch (error) {
@@ -82,7 +82,7 @@ const AddCollaboratorsModal = ({ projectId, onClose, onCollaboratorsUpdated,proj
       setExistingCollaborators((prevCollaborators) =>
         prevCollaborators.filter((collaborator) => collaborator.id !== userId)
       );
-      onCollaboratorsUpdated(); // Llama a la función de callback aquí
+      onCollaboratorsUpdated(); 
     } catch (error) {
       console.error("Error al remover colaborador:", error);
     }
@@ -91,7 +91,7 @@ const AddCollaboratorsModal = ({ projectId, onClose, onCollaboratorsUpdated,proj
   const handleOutsideClick = (e) => {
     if (e.target.classList.contains('fixed')) {
       setShowModal(false);
-      onClose(); // También debes llamar a onClose() aquí
+      onClose(); 
     }
   };
 
@@ -229,7 +229,7 @@ const AddCollaboratorsModal = ({ projectId, onClose, onCollaboratorsUpdated,proj
 AddCollaboratorsModal.propTypes = {
   projectId: PropTypes.string.isRequired,
   onClose: PropTypes.func.isRequired,
-  onCollaboratorsUpdated: PropTypes.func.isRequired, // Añadido
+  onCollaboratorsUpdated: PropTypes.func.isRequired,
 };
 
 export default AddCollaboratorsModal;

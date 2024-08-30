@@ -18,7 +18,7 @@ const TaskEditModal = ({
   const [taskAllowComments, setTaskAllowComments] = useState(
     task.allowComments || false
   );
-  const [taskStatus, setTaskStatus] = useState(task.status[0]); // Suponiendo que `status` es un array
+  const [taskStatus, setTaskStatus] = useState(task.status[0]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -32,7 +32,7 @@ const TaskEditModal = ({
         status: [taskStatus],
         allowComments:taskAllowComments
       });
-      refetchProject(); // Llama a refetchProject para actualizar la lista de tareas
+      refetchProject(); 
 
       onClose();
     } catch (error) {

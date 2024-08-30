@@ -64,7 +64,6 @@ export const updateTask = async (projectId, taskId, updatedTaskData) => {
 
 
 export const updateTaskStatus = async (taskId, projectId, statuses) => {
-  // Asegúrate de que 'statuses' es un array
   const statusArray = Array.isArray(statuses) ? statuses : [statuses];
 
   // Actualiza la tarea en Firestore
@@ -98,7 +97,6 @@ export const getTaskById = async (taskId, projectId) => {
     throw error;
   }
 };
-// taskService.js
 export const getTasksByProjectId = async (projectId) => {
   try {
     // Referencia a la colección de tareas dentro del proyecto
@@ -122,14 +120,14 @@ export const addComment = async (projectId, taskId, commentText,user) => {
   const commentsCollectionRef = collection(db, 'projects', projectId, 'tasks', taskId, 'comments');
   const newComment = {
       text: commentText,
-      userName: user.displayName, // Aquí deberías usar el nombre del usuario autenticado
+      userName: user.displayName,
       createdAt: new Date(),
       userPhoto: user.photoURL
   };
   await addDoc(commentsCollectionRef, newComment);
 };
 
-// Función para obtener todos los comentarios de una tarea
+// Obtener todos los comentarios de una tarea
 export const getCommentsByTaskId = async (projectId, taskId) => {
   const commentsCollectionRef = collection(db, 'projects', projectId, 'tasks', taskId, 'comments');
   const commentSnapshot = await getDocs(commentsCollectionRef);
@@ -187,7 +185,7 @@ export const getCommentsByTaskId = async (projectId, taskId) => {
   
   export const updateTaskStartDate = async (projectId, taskId, startDate = null)  => {
     try {
-      // Referencia al documento de la tarea en la subcolección 'tasks' del proyecto
+      // Referencia al documento de la tarea en la subcolección tasks
       const taskRef = doc(db, 'projects', projectId, 'tasks', taskId);
   
       // Actualizar las fechas de inicio y fin de la tarea
@@ -203,7 +201,7 @@ export const getCommentsByTaskId = async (projectId, taskId) => {
   };
   export const updateTaskEnd = async (projectId, taskId, endDate )  => {
     try {
-      // Referencia al documento de la tarea en la subcolección 'tasks' del proyecto
+      // Referencia al documento de la tarea en la subcolección tasks
       const taskRef = doc(db, 'projects', projectId, 'tasks', taskId);
   
       // Actualizar las fechas de inicio y fin de la tarea

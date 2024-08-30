@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useState } from 'react';
-import TaskEditModal from '../Task/TaskEditModal'; // Asegúrate de que la ruta de importación sea correcta
+import TaskEditModal from '../Task/TaskEditModal'; 
 import { updateTaskDates, updateTaskPriority } from '../../services/taskService';
 import ChangePriorityModal from './ChangePriorityModal';
 
@@ -9,7 +9,7 @@ import useAuthStore from '../../stores/userStore';
 
 const TaskSettingsModal = ({ task, onClose, statuses , refetchProject,onUpdateTask}) => {
     const modalRef = useRef(null);
-    const [openEditTaskModal, setOpenEditTaskModal] = useState(false); // Estado para el modal de edición
+    const [openEditTaskModal, setOpenEditTaskModal] = useState(false); 
     const [openPriorityModal, setOpenPriorityModal] = useState(false);
     const [openManageStatusesModal, setOpenManageStatusesModal] = useState(false);
     const [openTaskDatesModal,setOpenTaskDatesModal] = useState(false)
@@ -17,15 +17,15 @@ const TaskSettingsModal = ({ task, onClose, statuses , refetchProject,onUpdateTa
     const handleOpenEditTaskModal = (e) => {
         e.preventDefault();
         e.stopPropagation();
-        setOpenEditTaskModal(true); // Abre el modal de edición
+        setOpenEditTaskModal(true); 
     };
 
     const handleCloseEditTaskModal = () => {
-        setOpenEditTaskModal(false); // Cierra el modal de edición
+        setOpenEditTaskModal(false); 
     };
     const handleSavePriority = async (isPriority) => {
         await updateTaskPriority(task.projectId, task.id, isPriority);
-        refetchProject(); // Refetch project to update the UI
+        refetchProject();
     };
     const handleOpenPriorityModal = (e) => {
         e.preventDefault();
@@ -47,8 +47,8 @@ const TaskSettingsModal = ({ task, onClose, statuses , refetchProject,onUpdateTa
     const handleSaveTaskDates = async (startDate,endDate) => {
         
         await updateTaskDates(task.projectId, task.id, startDate, endDate);
-        refetchProject(); // Actualizar el proyecto para reflejar los cambios
-        handleCloseTaskDatesModal(); // Cierra el modal después de guardar
+        refetchProject(); 
+        handleCloseTaskDatesModal(); 
       };
 
     const handleOpenTaskDatesModal = (e) => {
@@ -87,17 +87,16 @@ const TaskSettingsModal = ({ task, onClose, statuses , refetchProject,onUpdateTa
         return `#${(1 << 24 | r << 16 | g << 8 | b).toString(16).slice(1).toUpperCase()}`;
     };
 
-    const baseColor = task.taskColor || '#FFFFFF'; // Color por defecto si no está definido
-    const lighterColor = lightenColor(baseColor, 0.2); // Aclara en un 20%
-    const darkerColor = darkenColor(baseColor, 0.4); // Oscurece en un 20%
+    const baseColor = task.taskColor || '#FFFFFF'; 
+    const lighterColor = lightenColor(baseColor, 0.2); 
+    const darkerColor = darkenColor(baseColor, 0.4); 
 
 
 
-    // Maneja el clic fuera del modal
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (modalRef.current && !modalRef.current.contains(event.target)) {
-                onClose(); // Llama a la función para cerrar el modal
+                onClose(); 
             }
         };
         document.addEventListener('mousedown', handleClickOutside);
@@ -172,7 +171,7 @@ const TaskSettingsModal = ({ task, onClose, statuses , refetchProject,onUpdateTa
     task={task}
     onClose={handleCloseManageStatusesModal}
     projectId={task.projectId}
-    onUpdateTask={onUpdateTask} // Asegúrate de que esto esté definido
+    onUpdateTask={onUpdateTask} 
 />
 
 

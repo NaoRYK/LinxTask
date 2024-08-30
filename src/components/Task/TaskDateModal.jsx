@@ -44,7 +44,7 @@ const TaskDatesModal = ({ task, onClose, onSave }) => {
                             onChange={(e) => setStartDate(e.target.value)}
                             required
                             className="w-full bg-loginGreen text-textGreen rounded-[15px] p-2 mt-2 focus:outline-none focus:ring-2 focus:ring-tertiaryGreen"
-                            max={dueDate || undefined} // Limita la fecha máxima al valor de dueDate si está definido
+                            max={dueDate || undefined} // Limita la fecha máxima al valor de dueDate
                         />
                     </div>
 
@@ -63,7 +63,7 @@ const TaskDatesModal = ({ task, onClose, onSave }) => {
                             onChange={(e) => setDueDate(e.target.value)}
                             required
                             className="w-full bg-loginGreen text-textGreen rounded-[15px] p-2 mt-2 focus:outline-none focus:ring-2 focus:ring-tertiaryGreen"
-                            min={startDate || undefined} // Limita la fecha mínima al valor de startDate si está definido
+                            min={startDate || undefined} // Limita la fecha mínima al valor de startDate
                         />
                     </div>
                 </div>

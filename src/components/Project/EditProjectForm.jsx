@@ -58,7 +58,7 @@ const EditProjectForm = ({ project, onEditProject, onClose }) => {
     try {
       await onEditProject({ ...project, name: projectText, color: projectColor, collaborators: selectedCollaborators });
       setError("");
-      onClose(); // Cierra el modal después de editar el proyecto
+      onClose(); 
     } catch (error) {
       console.error("Error al editar el proyecto:", error);
       setError("Hubo un error al editar el proyecto.");

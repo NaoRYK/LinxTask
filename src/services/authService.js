@@ -143,7 +143,6 @@ export const logInAccount = async (email, password) => {
         autoClose: 3000, 
       });
     } else {
-      // Aquí agregas un mensaje más específico para usuarios no verificados
       await signOut(auth);
 
       toast.update(toastId, {

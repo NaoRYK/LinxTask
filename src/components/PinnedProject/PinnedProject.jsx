@@ -45,7 +45,7 @@ const PinnedProject = ({ project, onUnpinProject,onDelete }) => {
               className="hover:bg-outlineGrey/50 p-1 rounded-lg transition-all"
               onClick={(e) => {
                 e.preventDefault()
-                e.stopPropagation(); // Evita que el click se propague al Link
+                e.stopPropagation(); 
                 onUnpinProject(project);
               }}
             >

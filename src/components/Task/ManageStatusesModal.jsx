@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { addCustomStatus, deleteStatus, getTaskStatuses, updateStatus } from '../../services/statusService'; // Asegúrate de que `updateStatus` esté implementado
+import { addCustomStatus, deleteStatus, getTaskStatuses, updateStatus } from '../../services/statusService'; 
 import { getTasksByProjectId, updateTaskStatus } from '../../services/taskService';
 import unasignIcon from '../../assets/svg/do_not_disturb_on.svg'
 import { faCircleMinus, faTrash } from '@fortawesome/free-solid-svg-icons';

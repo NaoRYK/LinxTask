@@ -7,7 +7,7 @@ export const getTaskStatuses = async (projectId) => {
         const statusSnapshot = await getDocs(statusCollectionRef);
         const statuses = [];
         statusSnapshot.forEach((doc) => {
-            statuses.push({ id: doc.id, ...doc.data() }); // Incluye el ID en el estado
+            statuses.push({ id: doc.id, ...doc.data() }); 
         });
         return statuses;
     } catch (error) {

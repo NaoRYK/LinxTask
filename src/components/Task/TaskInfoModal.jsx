@@ -13,10 +13,10 @@ const TaskInfoModal = ({ taskData, onClose ,  refetchProject}) => {
     const [creatorData, setCreatorData] = useState();
     const [statuses, setStatuses] = useState([]);
     const [collaborators, setCollaborators] = useState([]);
-    const [comments, setComments] = useState([]); // Estado para los comentarios
-    const [newComment, setNewComment] = useState(''); // Estado para el nuevo comentario
+    const [comments, setComments] = useState([]); 
+    const [newComment, setNewComment] = useState(''); 
     const getStatusColor = (status) => {
-        // Encuentra el objeto de estado usando el nombre del estado
+
         const statusObj = statuses.find(s => s.name.toLowerCase() === status.toLowerCase());
         console.log(statuses);
         
@@ -38,7 +38,7 @@ const TaskInfoModal = ({ taskData, onClose ,  refetchProject}) => {
     
         try {
             await updateTaskStartDate(task.projectId, task.id, startDate);
-            // Actualiza el estado local con los nuevos valores
+
             setTask({
                 ...taskData,
                 startDate,
@@ -58,13 +58,13 @@ const TaskInfoModal = ({ taskData, onClose ,  refetchProject}) => {
         try {
             await updateTaskEnd(task.projectId, task.id, endDate);
             
-            // Actualiza el estado local con los nuevos valores
+            // Actualiza el estado local 
             setTask({
                 ...taskData,
                 endDate,
             });
     
-            // Actualiza el estado de la tarea a 'completado'
+
             await updateTaskStatusInDatabase(task.projectId, task.id, 'completada');
             
             const fetchedStatuses = await getTaskStatuses(task.projectId);
@@ -134,7 +134,7 @@ const TaskInfoModal = ({ taskData, onClose ,  refetchProject}) => {
     const darkerColor = darkenColor(backgroundColor, 0.4);
     const darkColor = darkenColor(backgroundColor, 0.2);
 
-    // Función para convertir `createdAt` a una fecha formateada
+    // convertir `createdAt` a una fecha formateada
     const parseDate = (date) => {
         if (date && date.seconds) {
             return new Date(date.seconds * 1000);
@@ -190,7 +190,7 @@ const TaskInfoModal = ({ taskData, onClose ,  refetchProject}) => {
 
                 <button
                     onClick={(e) => {
-                        e.stopPropagation(); // Esto evita que el evento se propague a elementos padres
+                        e.stopPropagation(); 
                         onClose();
                     }}
                     className="absolute top-4 right-4 text-primaryDark hover:text-gray-800"

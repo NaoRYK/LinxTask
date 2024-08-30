@@ -97,7 +97,7 @@ const ProjectCard = ({ project, onTogglePin, isPinned, onDelete,onEditProject })
   <EditProjectModal onClose={closeEditModal}>
     <EditProjectForm
       project={project}
-      onEditProject={onEditProject} // Asegúrate de definir esta función en ProjectCard
+      onEditProject={onEditProject} 
       onClose={closeEditModal}
     />
   </EditProjectModal>

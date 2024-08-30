@@ -16,7 +16,6 @@ const useProjectStore = create((set) => ({
       ? state.storeProjects // Si el proyecto ya existe, no lo agrega
       : [...state.storeProjects, project]; // Si no existe, lo agrega
     
-    // Log para verificar el estado actualizado
     console.log("Adding project:", project);
     console.log("Updated storeProjects:", updatedProjects);
     

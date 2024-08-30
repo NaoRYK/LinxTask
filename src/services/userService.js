@@ -39,7 +39,7 @@ export const getUserById = async (userId) => {
         const userDocRef = doc(db, 'users', userId);
         const userDoc = await getDoc(userDocRef);
         if (userDoc.exists()) {
-            return userDoc.data(); // Asegúrate de que `photoURL` esté incluido en los datos
+            return userDoc.data(); 
         } else {
             console.error("Usuario no encontrado");
             return null;

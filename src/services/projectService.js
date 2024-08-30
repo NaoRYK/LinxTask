@@ -21,8 +21,8 @@ export const createProject = async (user, projectName, collaborators = null, col
 
     // Crear los estados iniciales
     const initialStatuses = [
-      { name: 'pendiente', color: '#808080' }, // Gris
-      { name: 'completada', color: '#008000' }, // Verde
+      { name: 'pendiente', color: '#808080' }, 
+      { name: 'completada', color: '#008000' }, 
     ];
 
     for (const status of initialStatuses) {
@@ -43,7 +43,7 @@ export const createProject = async (user, projectName, collaborators = null, col
     };
   } catch (error) {
     console.error("Error al agregar el proyecto:", error);
-    throw error; // Lanza el error para que el componente que llama pueda manejarlo
+    throw error; 
   }
 };
 export const deleteProject = async (projectId) => {

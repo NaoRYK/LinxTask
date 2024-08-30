@@ -11,14 +11,13 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck } from '@fortawesome/free-solid-svg-icons';
 
 const Project = () => {
-  const { projectId } = useParams(); // Obtén projectId de la URL
+  const { projectId } = useParams(); 
   const [project, setProject] = useState(null);
   const [statuses, setStatuses] = useState([]);
   const [openCreateModal, setOpenCreateModal] = useState(false);
   const [openCollaboratorsModal, setOpenCollaboratorsModal] = useState(false);
   const { user } = useAuthStore();
-  const [filterType, setFilterType] = useState('all'); // Estado para manejar el tipo de filtro
-
+  const [filterType, setFilterType] = useState('all'); 
   const darkenColor = (color, percent) => {
     if (color) {
       let R = parseInt(color.slice(1, 3), 16);
@@ -38,7 +37,7 @@ const Project = () => {
   };
 
   const handleCollaboratorsUpdated = () => {
-    refetchProject(); // Refetch para actualizar los colaboradores
+    refetchProject(); 
   };
 
   const handleAddCollaboratorsButton = () => {
@@ -128,7 +127,7 @@ const Project = () => {
           onClose={() => setOpenCreateModal(false)}
           statuses={statuses}
           project={project}
-          refetchProject={refetchProject} // Pasa la función refetchProject como prop
+          refetchProject={refetchProject} 
           onCreateTask={onCreateTask}
         />
       )}
